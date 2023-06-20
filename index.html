@@ -33,38 +33,13 @@
         height: 100%;
         width: 100%;
         margin: 0;
-        overflow: hidden;
-        background-color: #000000;
-      }
-
-      canvas {
-        margin-left: auto;
-        margin-right: auto;
-        height: 100%; 
-        aspect-ratio: 2/3;
-      }
-
-      #game {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        padding: 0;
       }
     </style>
 
     <noscript>Please enable javascript to continue using this application.</noscript>
-
-    <!-- installs the serviceWorker -->
-    <!-- <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-        })
-      }
-    </script> -->
   </head>
   <body>
-    <div id="game" style="height: 100%; width: 100%;">
-      <canvas id="gameCanvas" tabindex="1" width="400px" height="600px"></canvas>
-    </div>
+    <div id="game"/>
   </body>
 </html>

@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "NhanNguyen",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dumbkiwi/doodle-jump-phaser.git"
+  },
   "scripts": {
     "dev": "webpack serve --config webpack/webpack.dev.js",
     "build": "rimraf dist && webpack --config webpack/webpack.prod.js",
@@ -53,5 +57,8 @@
     "webpack-merge": "^5.8.0",
     "webpack-obfuscator": "^3.5.0",
     "workbox-webpack-plugin": "^6.4.2"
+  },
+  "dependencies": {
+    "phaser": "^3.60.0"
   }
 }
