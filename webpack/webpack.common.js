@@ -43,7 +43,7 @@ module.exports = {
         },
     },
     plugins: [
-        new HtmlWebpackPlugin({ gameName: 'Doodle jump', template: 'index.html' }),
+        new HtmlWebpackPlugin({ gameName: 'Bouncing Ball', template: 'index.html' }),
         new CopyWebpackPlugin({
             patterns: [
                 { from: 'assets', to: 'assets' },

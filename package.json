@@ -1,13 +1,13 @@
 {
   "name": "doodle-jump-phaser",
   "version": "1.0.0",
-  "description": "a doodle jump game made with phaser",
+  "description": "a bouncing ball game made with phaser",
   "main": "index.js",
   "author": "NhanNguyen",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dumbkiwi/doodle-jump-phaser.git"
+    "url": "https://github.com/dumbkiwi/bouncing-ball-phaser.git"
   },
   "scripts": {
     "dev": "webpack serve --config webpack/webpack.dev.js",
