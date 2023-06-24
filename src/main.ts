@@ -12,7 +12,6 @@ const SCALE_OPTS = {
 const GAME_CONFIG: Types.Core.GameConfig = {
     title: 'Bouncing Ball',
     type: Phaser.WEBGL,
-    backgroundColor: '#000000',
     scale: SCALE_OPTS,
     scene: Gameplay,
 }
