@@ -36,13 +36,13 @@ export default class Platform extends Phaser.GameObjects.Container {
         return this.platform
     }
 
-    private handleCollisionWithPlayer(_object1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile, object2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile): void {
+    private handleCollisionWithPlayer(): void {
         // ignore collision
         this.player.setIgnoreInput(true)
 
         // wait for some time before allowing the player to move again
         this.scene.time.addEvent({
-            delay: 500,
+            delay: 200,
             callback: () => {
                 this.player.setIgnoreInput(false)
             }
