@@ -1,6 +1,5 @@
 export default class Ball extends Phaser.Physics.Arcade.Image {
     private acceleration: Phaser.Math.Vector2
-    private pointer: Phaser.Input.Pointer
     private pointerDown = false
     private ignoreInput = false
 
@@ -15,7 +14,6 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
 
         this.onCreate()
         this.acceleration = new Phaser.Math.Vector2(0, acceleration).scale(1 / this.body?.mass)
-        this.pointer = scene.input.activePointer
 
         this.scene.events.on('update', this.onUpdate, this)
 
