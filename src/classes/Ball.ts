@@ -1,9 +1,12 @@
+import ScoreManager from "./ScoreManager"
+
 export default class Ball extends Phaser.Physics.Arcade.Image {
     private acceleration: Phaser.Math.Vector2
     private pointerDown = false
     private ignoreInput = false
+    private scoreManager: ScoreManager
 
-    constructor(acceleration: number, scene: Phaser.Scene, x: number, y: number, texture: string) {
+    constructor(acceleration: number, scene: Phaser.Scene, x: number, y: number, texture: string, scoreManager: ScoreManager) {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -21,9 +24,11 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
             this.pointerDown = true
         })
 
-        this.scene.input.on('pointerup', () => {
-            this.pointerDown = false
-        })
+        // this.scene.input.on('pointerup', () => {
+        //     this.pointerDown = false
+        // })
+
+        this.scoreManager = scoreManager
     }
 
     onCreate () {
@@ -39,6 +44,14 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
 
     public setIgnoreInput(ignore = true): void {
         this.ignoreInput = ignore
+
+        if (ignore) {
+            this.pointerDown = false
+        }
+    }
+
+    public addScore(score = 1) {
+        this.scoreManager.addScore(score)
     }
 
 }
