@@ -1,6 +1,7 @@
 export default class Ball extends Phaser.Physics.Arcade.Image {
     private acceleration: Phaser.Math.Vector2
     private pointer: Phaser.Input.Pointer
+    private pointerDown = false
     private ignoreInput = false
 
     constructor(acceleration: number, scene: Phaser.Scene, x: number, y: number, texture: string) {
@@ -17,6 +18,14 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
         this.pointer = scene.input.activePointer
 
         this.scene.events.on('update', this.onUpdate, this)
+
+        this.scene.input.on('pointerdown', () => {
+            this.pointerDown = true
+        })
+
+        this.scene.input.on('pointerup', () => {
+            this.pointerDown = false
+        })
     }
 
     onCreate () {
@@ -25,7 +34,7 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
     }
 
     onUpdate () {
-        if (!this.ignoreInput && this.pointer.isDown) {
+        if (!this.ignoreInput && this.pointerDown) {
             this.body?.velocity.add(this.acceleration)
         }
     }
