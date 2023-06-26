@@ -52,17 +52,15 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
     update() {
         // if there is no platform in the buffer area, create one
-        // debugger
         const {left: bufferLeft, top: bufferTop, width: bufferWidth, height: bufferHeight} = this.bufferArea.getBounds()
         const bodies = this.scene.physics.overlapRect(bufferLeft, bufferTop, bufferWidth, bufferHeight)
-
         if (!bodies.some(body => body.gameObject instanceof Platform)) {
             this.createPlatform()
         }
 
+        // if there is a platform in the despawn area, despawn it
         const {left: despawnLeft, top: despawnTop, width: despawnWidth, height: despawnHeight} = this.despawnArea.getBounds()
         const bodiesToDespawn = this.scene.physics.overlapRect(despawnLeft, despawnTop, despawnWidth, despawnHeight)
-
         bodiesToDespawn.forEach(body => {
             if (body.gameObject instanceof Platform) {
                 body.gameObject.sleep()
@@ -101,22 +99,24 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
         const platform = this.getFirstDead(false, 0, 0, 'platform') as Platform
         
-        if (platform) {
-            const {left: spawnLeft, width: spawnWidth} = this.spawnArea.getBounds()
-
-            const spawnX = Math.random() * spawnWidth + spawnLeft
-            const spawnY = Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
-
-            platform.awake(spawnX, spawnY, {
-                width: Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) + this.config.minPlatformWidth,
-                height: Math.random() * (this.config.maxPlatformHeight - this.config.minPlatformHeight) + this.config.minPlatformHeight,
-                extraWidth: 0,
-                requiredAcc: 0.6,
-            }, this.player)
-
-            return platform
+        if (!platform) {
+            console.warn('no dead platforms')
+            return null
         }
 
-        return null
+        const {left: spawnLeft, width: spawnWidth} = this.spawnArea.getBounds()
+
+        const spawnX = Math.random() * spawnWidth + spawnLeft
+        const spawnY = Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
+
+        platform.awake(spawnX, spawnY, {
+            width: Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) + this.config.minPlatformWidth,
+            height: Math.random() * (this.config.maxPlatformHeight - this.config.minPlatformHeight) + this.config.minPlatformHeight,
+            extraWidth: 0,
+            requiredAcc: 0.6,
+        }, this.player)
+
+        return platform
+
     }
 }

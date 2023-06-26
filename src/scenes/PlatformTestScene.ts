@@ -17,16 +17,6 @@ export default class PlatformTestScene extends Phaser.Scene {
 
         ball.setVelocityY(-400)
 
-        // test a single platform
-        // this.add.group([new Platform(this.physics.world, this, 100, 800, {
-        //     width: 100,
-        //     height: 20,
-        //     extraWidth: 30,
-        //     requiredAcc: 0.6,
-        //     }, ball)], {
-        //         runChildUpdate: true,
-        // })
-
         this.spawner = new PlatformSpawner(this.physics.world, this, ball, {
             minGap: 200,
             maxGap: 400,
