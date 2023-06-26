@@ -1,42 +1,124 @@
-import Phaser from "phaser"
-import Ball from "./Ball"
+import Phaser from 'phaser'
+import Ball from './Ball'
 
 const BOUNCE_VELOCITY = 800
 
-export default class Platform extends Phaser.GameObjects.Container {
-    private platform: Phaser.GameObjects.Rectangle
+export default class Platform extends Phaser.Physics.Arcade.Group {
+    private config: PlatformConfig
+
+    private mPlatform: Phaser.GameObjects.Rectangle
+    private lPlatform: Phaser.GameObjects.Rectangle
+    private rPlatform: Phaser.GameObjects.Rectangle
+
+    private requiredAcc: number
+
     private player: Ball
-    constructor(config: PlatformConfig, collisionTarget: Ball, heightFromBottom: number, scene: Phaser.Scene, x?: number) {
-        super(scene, 0, 0, [])
-        scene.add.existing(this)
+    private graphics: Phaser.GameObjects.Graphics
+    private mainCamera: Phaser.Cameras.Scene2D.Camera
 
-        const camera = scene.cameras.main
-        const y = camera.displayHeight - heightFromBottom
+    public static preload(scene: Phaser.Scene): void {
+        scene.load.image('platform-particle-square', 'assets/shapes/square.png')
+    }
 
-        this.platform = scene.add.rectangle(x, y, config.width, config.height, 0xdddddd)
+    constructor(
+        world: Phaser.Physics.Arcade.World,
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        platformConfig: PlatformConfig,
+        collisionTarget: Ball
+    ) {
+        super(world, scene, {
+            allowGravity: false,
+            immovable: true,
+        })
 
-        // this.platform.setStrokeStyle(1, 0x000000)
+        const mainWidth = platformConfig.requiredAcc * platformConfig.width
+        const extraWidth = (platformConfig.width - mainWidth) / 2
+        const extentOffset = mainWidth / 2 + extraWidth / 2
 
-        scene.physics.add.existing(this.platform, true)
+        const mPlatform = scene.add.rectangle(x, y, mainWidth, platformConfig.height)
+        const lPlatform = scene.add.rectangle(
+            x - extentOffset,
+            y,
+            extraWidth,
+            platformConfig.height
+        )
+        const rPlatform = scene.add.rectangle(
+            x + extentOffset,
+            y,
+            extraWidth,
+            platformConfig.height
+        )
 
-        // shadow of the platform, rectangle from the platform to the bottom of the screen
-        const shadow = scene.add
-            .rectangle(x, y, config.width, heightFromBottom, 0x000000, 0.05)
-            .setOrigin(0.5, 0)
+        // set style
+        mPlatform.setFillStyle(0xdddddd)
+        lPlatform.setFillStyle(0xdddddd)
+        rPlatform.setFillStyle(0xdddddd)
 
-        this.body = this.platform.body as Phaser.Physics.Arcade.Body
+        scene.physics.add.collider(
+            mPlatform,
+            collisionTarget,
+            this.onCollideWithPlayer,
+            undefined,
+            this
+        )
+        scene.physics.add.collider(
+            lPlatform,
+            collisionTarget,
+            this.onCollideWithPlayer,
+            undefined,
+            this
+        )
+        scene.physics.add.collider(
+            rPlatform,
+            collisionTarget,
+            this.onCollideWithPlayer,
+            undefined,
+            this
+        )
+
+        this.add(mPlatform)
+        this.add(lPlatform)
+        this.add(rPlatform)
+
+        this.getChildren().forEach((child) => {
+            const body = child.body as Phaser.Physics.Arcade.Body
+
+            if (body) {
+                body.setAllowGravity(false)
+                body.setImmovable(true)
+            }
+        })
+
+        this.config = platformConfig
+
+        this.mPlatform = mPlatform
+        this.lPlatform = lPlatform
+        this.rPlatform = rPlatform
+
+        this.requiredAcc = platformConfig.requiredAcc
+
         this.player = collisionTarget
-
-        this.add([shadow, this.platform])
-
-        scene.physics.add.collider(this.platform, collisionTarget, this.handleCollisionWithPlayer, undefined, this)
+        this.graphics = scene.add.graphics()
+        this.mainCamera = scene.cameras.main
     }
 
-    public getPlatform(): Phaser.GameObjects.Rectangle {
-        return this.platform
+    update(): void {
+        const heightFromBottom = this.mainCamera.height - this.mPlatform.y
+
+        // draw gradient shadow
+        this.graphics.clear()
+        this.graphics.fillGradientStyle(0x000000, 0x000000, 0xffffff, 0xffffff, 0.05)
+        this.graphics.fillRect(
+            this.lPlatform.x - this.lPlatform.width / 2,
+            this.mPlatform.y + this.mPlatform.height / 2,
+            this.config.width,
+            heightFromBottom
+        )
     }
 
-    private handleCollisionWithPlayer(): void {
+    private bouncePlayer(): void {
         // ignore collision
         this.player.setIgnoreInput(true)
 
@@ -45,10 +127,56 @@ export default class Platform extends Phaser.GameObjects.Container {
             delay: 200,
             callback: () => {
                 this.player.setIgnoreInput(false)
-            }
+            },
         })
 
         // bounce the player
         this.player.body?.velocity.set(0, -BOUNCE_VELOCITY)
+    }
+
+    private onAccurateCollision(): void {
+        this.mPlatform.setFillStyle(0x88ff88)
+    }
+
+    private onInaccurateCollision(platform: Phaser.GameObjects.Rectangle): void {
+        platform.setFillStyle(0xffff00)
+    }
+
+    private onCollideWithPlayer(): void {
+        // checks if any of the player's extent fall within the main platform's extent
+        const playerWidth = this.player.width
+        let playerExtentL = this.player.getLeftCenter().x
+        let playerExtentR = this.player.getRightCenter().x
+
+        const platformExtentL = this.mPlatform.getLeftCenter().x
+        const platformExtentR = this.mPlatform.getRightCenter().x
+
+        if (
+            playerExtentL === undefined ||
+            platformExtentL === undefined ||
+            playerExtentR === undefined ||
+            platformExtentR === undefined
+        ) {
+            throw new Error('undefined extents')
+        }
+
+        // apply accuracy offset
+        playerExtentL += playerWidth * this.requiredAcc
+        playerExtentR -= playerWidth * this.requiredAcc
+
+        const isAccurate =
+            (playerExtentL <= platformExtentL && playerExtentR <= platformExtentL) ||
+            (playerExtentL >= platformExtentR && playerExtentR >= platformExtentR)
+        const isLeft = playerExtentL <= platformExtentL && playerExtentR <= platformExtentL
+
+        // change platform color
+        if (isAccurate) {
+            this.onInaccurateCollision(isLeft ? this.lPlatform : this.rPlatform)
+        } else {
+            this.onAccurateCollision()
+        }
+
+        // bounce player
+        this.bouncePlayer()
     }
 }
