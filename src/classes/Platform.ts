@@ -81,31 +81,13 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    public drawOverlay(config: PlatformOverlayConfig): void {
-        this.graphics.fillStyle(config.color, config.alpha)
-        this.graphics.fillRect(
-            config.position.x - config.size.x / 2,
-            config.position.y - config.size.y / 2,
-            config.size.x,
-            config.size.y
-        )
-    }
-
-    public drawShadow(config: PlatformConfig): void {
-        const heightFromBottom = this.mainCamera.height - this.mPlatform.position.y
-
-        // draw gradient shadow
-        this.graphics.clear()
-        this.graphics.setDepth(this.depth + 1)
-        this.graphics.fillGradientStyle(0x000000, 0x000000, 0xffffff, 0xffffff, 0.05)
-        this.graphics.fillRect(
-            this.lPlatform.position.x - this.lPlatform.size.x / 2,
-            this.mPlatform.position.y + this.mPlatform.size.y / 2,
-            config.width,
-            heightFromBottom
-        )
-    }
-
+    /**
+     * Reset the platform to its initial state
+     * @param x The x coordinate (in world space) to position the Game Object at.
+     * @param y The y coordinate (in world space) to position the Game Object at.
+     * @param platformConfig Configurations for the platform
+     * @param collisionTarget The player object that will collide with this platform
+     */
     public awake(
         x: number,
         y: number,
@@ -139,8 +121,36 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         this.travelLeft()
     }
 
+    /**
+     * Disable the platform's body
+     */
     public sleep() {
         this.disableBody(true, true)
+    }
+
+    private drawOverlay(config: PlatformOverlayConfig): void {
+        this.graphics.fillStyle(config.color, config.alpha)
+        this.graphics.fillRect(
+            config.position.x - config.size.x / 2,
+            config.position.y - config.size.y / 2,
+            config.size.x,
+            config.size.y
+        )
+    }
+
+    private drawShadow(config: PlatformConfig): void {
+        const heightFromBottom = this.mainCamera.height - this.mPlatform.position.y
+
+        // draw gradient shadow
+        this.graphics.clear()
+        this.graphics.setDepth(this.depth + 1)
+        this.graphics.fillGradientStyle(0x000000, 0x000000, 0xffffff, 0xffffff, 0.05)
+        this.graphics.fillRect(
+            this.lPlatform.position.x - this.lPlatform.size.x / 2,
+            this.mPlatform.position.y + this.mPlatform.size.y / 2,
+            config.width,
+            heightFromBottom
+        )
     }
 
     private updateGraphicPosition(config: PlatformConfig) {

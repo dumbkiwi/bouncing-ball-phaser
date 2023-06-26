@@ -44,12 +44,6 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         this.despawnArea = this.createDespawnArea(config)
     }
 
-    preUpdate(time: number, delta: number) {
-        super.preUpdate(time, delta)
-
-        
-    }
-
     update() {
         // if there is no platform in the buffer area, create one
         const {left: bufferLeft, top: bufferTop, width: bufferWidth, height: bufferHeight} = this.bufferArea.getBounds()
@@ -68,7 +62,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         })
     }
 
-    public createSpawnArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
+    private createSpawnArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
         // add rectangle collider to the world, in the center of the spawn
         const spawnWidth = config.maxGap - config.minGap
         const spawnX = this.mainCamera.width + config.minGap + spawnWidth / 2
@@ -76,7 +70,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         return this.scene.add.rectangle(spawnX, spawnY, spawnWidth, this.mainCamera.height, 0x0000ff, 0)
     }
 
-    public createBufferArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
+    private createBufferArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
         // add rectangle collider to the world, offset by the camera's width
         const bufferWidth = config.maxGap
         const bufferX = this.mainCamera.width + bufferWidth / 2
@@ -84,7 +78,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         return this.scene.add.rectangle(bufferX, bufferY, bufferWidth, this.mainCamera.height, 0xff0000, 0)
     }
 
-    public createDespawnArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
+    private createDespawnArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
         // add rectangle collider to the world, offset by the camera's width
         const despawnWidth = config.maxGap
         const despawnX = -despawnWidth / 2 - config.minGap
