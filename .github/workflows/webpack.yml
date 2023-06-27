@@ -32,9 +32,8 @@ jobs:
     - name: Upload GitHub Pages artifact
       uses: actions/upload-pages-artifact@v1.0.9
       with:
-        name: page
+        name: github-pages
         path: dist
-        if-no-files-found: error
         
   deploy:
     needs: build
@@ -45,19 +44,11 @@ jobs:
 
     # Deploy to the github-pages environment
     environment:
-      name: page
+      name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
       
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@master
-        with:
-          name: page
-          path: .
-      - uses: actions/configure-pages@v3.0.6
-      - uses: actions/upload-pages-artifact@v1
-        with:
-          path: .
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
