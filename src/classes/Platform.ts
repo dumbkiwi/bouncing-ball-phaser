@@ -100,9 +100,9 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         this.setDisplaySize(platformConfig.width, platformConfig.height)
 
         // set style
-        this.mPlatform.color = 0xdddddd
-        this.lPlatform.color = 0xdddddd
-        this.rPlatform.color = 0xdddddd
+        this.mPlatform.color = 0x666666
+        this.lPlatform.color = 0x666666
+        this.rPlatform.color = 0x666666
 
         const body = this.body as Phaser.Physics.Arcade.Body
 
@@ -249,11 +249,17 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         // change platform color
         if (isAccurate) {
             this.onInaccurateCollision(isLeft)
+            
+            // reset multiplier
+            this.player.getScoreManager().resetMultiplier()
         } else {
             this.onAccurateCollision()
         }
-
+        
         // bounce player
         this.bouncePlayer()
+        
+        // add score
+        this.player.getScoreManager().addScore()
     }
 }

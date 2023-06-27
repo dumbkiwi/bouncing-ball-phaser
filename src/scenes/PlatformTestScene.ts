@@ -1,5 +1,6 @@
 import Ball from '@/classes/Ball'
 import PlatformSpawner from '@/classes/PlatformSpawner'
+import ScoreManager from '@/classes/ScoreManager'
 import Phaser from 'phaser'
 
 export default class PlatformTestScene extends Phaser.Scene {
@@ -12,7 +13,9 @@ export default class PlatformTestScene extends Phaser.Scene {
         this.load.svg('platform', 'assets/shapes/square.svg')
     }
     create() {
-        const ball = new Ball(100, this, 250, 300, 'ball')
+        const scoreManager = new ScoreManager(this, this.cameras.main.width / 2, 100)
+
+        const ball = new Ball(100, this, 250, 300, 'ball', scoreManager)
         this.physics.add.existing(ball)
 
         ball.setVelocityY(-400)

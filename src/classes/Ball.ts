@@ -50,8 +50,7 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
         }
     }
 
-    public addScore(score = 1) {
-        this.scoreManager.addScore(score)
+    public getScoreManager() {
+        return this.scoreManager
     }
-
 }
