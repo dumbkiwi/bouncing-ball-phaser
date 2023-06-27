@@ -1,12 +1,12 @@
 import Phaser from 'phaser'
 import type { Types } from "phaser"
-import Gameplay from './scenes/Gameplay'
+import PlatformTestScene from './scenes/PlatformTestScene'
 
 const SCALE_OPTS = {
     mode: Phaser.Scale.ScaleModes.FIT,
     parent: 'game',
-    width: 1280, // 16x9
-    height: 720,
+    width: 720, // 16x9
+    height: 1280,
 }
 
 const GAME_CONFIG: Types.Core.GameConfig = {
@@ -15,13 +15,13 @@ const GAME_CONFIG: Types.Core.GameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
-            gravity: { y: 1 },
+            // debug: true,
+            gravity: { y: 600 },
         }
     },
-    backgroundColor: '#ddffff',
+    backgroundColor: '#ffffff',
     scale: SCALE_OPTS,
-    scene: Gameplay,
+    scene: PlatformTestScene,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
