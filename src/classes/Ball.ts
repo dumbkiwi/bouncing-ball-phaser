@@ -20,9 +20,9 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
 
         this.scene.events.on('update', this.onUpdate, this)
 
-        this.scene.input.on('pointerdown', () => {
-            this.pointerDown = true
-        })
+        // this.scene.input.on('pointerdown', () => {
+        //     this.pointerDown = true
+        // })
 
         // this.scene.input.on('pointerup', () => {
         //     this.pointerDown = false
@@ -34,6 +34,17 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
     onCreate () {
         this.setBounce(1)
         this.setCollideWorldBounds(true)
+
+        // add touch interaction
+        const rectangle = this.scene.add.rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height, 0xff0000, 0)
+
+        rectangle.setOrigin(0, 0)
+
+        rectangle.setInteractive()
+
+        rectangle.on('pointerdown', () => {
+            this.pointerDown = true
+        })
     }
 
     onUpdate () {

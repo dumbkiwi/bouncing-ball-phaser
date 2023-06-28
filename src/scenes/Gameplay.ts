@@ -1,111 +1,47 @@
-import Vector2 = Phaser.Math.Vector2
-import Spawner, { Direction, SpawnerState } from '@/classes/Spawner'
-
-const DEFAULT_SPACING = 25
-const DEFAULT_DISTANCE = 150
-
-const DEFAULT_SPAWNER_STATE: SpawnerState = {
-    spacing: {
-        [Direction.TOP]: DEFAULT_SPACING,
-        [Direction.DOWN]: DEFAULT_SPACING,
-        [Direction.LEFT]: DEFAULT_SPACING,
-        [Direction.RIGHT]: DEFAULT_SPACING,
-        [Direction.TOP_LEFT]: DEFAULT_SPACING,
-        [Direction.TOP_RIGHT]: DEFAULT_SPACING,
-        [Direction.DOWN_LEFT]: DEFAULT_SPACING,
-        [Direction.DOWN_RIGHT]: DEFAULT_SPACING,
-    },
-    distance: {
-        [Direction.TOP]: DEFAULT_DISTANCE,
-        [Direction.DOWN]: DEFAULT_DISTANCE,
-        [Direction.LEFT]: DEFAULT_DISTANCE,
-        [Direction.RIGHT]: DEFAULT_DISTANCE,
-        [Direction.TOP_LEFT]: DEFAULT_DISTANCE,
-        [Direction.TOP_RIGHT]: DEFAULT_DISTANCE,
-        [Direction.DOWN_LEFT]: DEFAULT_DISTANCE,
-        [Direction.DOWN_RIGHT]: DEFAULT_DISTANCE,
-    },
-}
-
-const SECONDARY_SPAWNER_STATE: SpawnerState = {
-    spacing: {
-        [Direction.TOP]: DEFAULT_SPACING,
-        [Direction.DOWN]: DEFAULT_SPACING,
-        [Direction.LEFT]: DEFAULT_SPACING,
-        [Direction.RIGHT]: DEFAULT_SPACING,
-        [Direction.TOP_LEFT]: 0.5,
-        [Direction.TOP_RIGHT]: 0.5,
-        [Direction.DOWN_LEFT]: 0.5,
-        [Direction.DOWN_RIGHT]: 0.5,
-    },
-    distance: {
-        [Direction.TOP]: DEFAULT_DISTANCE * 1.5,
-        [Direction.DOWN]: DEFAULT_DISTANCE * 1.5,
-        [Direction.LEFT]: DEFAULT_DISTANCE / 2,
-        [Direction.RIGHT]: DEFAULT_DISTANCE / 2,
-        [Direction.TOP_LEFT]: DEFAULT_DISTANCE / 1.5,
-        [Direction.TOP_RIGHT]: DEFAULT_DISTANCE / 1.5,
-        [Direction.DOWN_LEFT]: DEFAULT_DISTANCE / 1.5,
-        [Direction.DOWN_RIGHT]: DEFAULT_DISTANCE / 1.5,
-    },
-}
+import Ball from '@/classes/Ball'
+import PlatformSpawner from '@/classes/PlatformSpawner'
+import ScoreManager from '@/classes/ScoreManager'
+import Phaser from 'phaser'
+import { SceneKeys } from './SceneManager'
 
 export default class Gameplay extends Phaser.Scene {
+    scene!: Phaser.Scenes.ScenePlugin
+    private spawner!: PlatformSpawner
     preload() {
-        this.load.image('pearl', 'assets/bouncing-ball/1x/pearl_purple.png')
+        this.load.image('ball', 'assets/bouncing-ball/1x/pearl_light.png')
+        this.load.svg('platform', 'assets/shapes/square.svg')
     }
+    
     create() {
-        const spawner = new Spawner(
-            this,
-            new Vector2(1100, 500),
-            {
-                eagerness: 0.001,
-                damping: 0.5,
-                anticipation: 2,
-            },
-            DEFAULT_SPAWNER_STATE
-        )
+        this.scene.launch(SceneKeys.UI)
+        this.scene.moveBelow(SceneKeys.UI)
 
-        const group = this.add.group(spawner, {
-            runChildUpdate: true,
+        const scoreManager = new ScoreManager(this, this.cameras.main.width / 2, 100)
+
+        const ball = new Ball(100, this, 250, 300, 'ball', scoreManager)
+        this.physics.add.existing(ball)
+
+        ball.setVelocityY(-400)
+
+        this.spawner = new PlatformSpawner(this.physics.world, this, ball, {
+            minGap: 200,
+            maxGap: 400,
+            minHeight: 800,
+            maxHeight: 1000,
+            minPlatformHeight: 20,
+            maxPlatformHeight: 20,
+            minPlatformWidth: 100,
+            maxPlatformWidth: 200,
         })
 
-        const button1 = this.add.container(100, 100, [
-            this.add.circle(0, 0, 50, 0x9b7df8, 1).setStrokeStyle(2, 0x000000, 1),
-            this.add
-                .text(0, 0, '1', { fontSize: '32px', color: '#ffffff', fontFamily: 'Consolas' })
-                .setOrigin(0.5, 0.5),
-        ])
-
-        button1.setSize(100, 100)
-        button1.setInteractive()
-
-        const button2 = this.add.container(300, 100, [
-            this.add.circle(0, 0, 50, 0x9b7df8, 1).setStrokeStyle(2, 0x000000, 1),
-            this.add
-                .text(0, 0, '2', { fontSize: '32px', color: '#ffffff', fontFamily: 'Consolas' })
-                .setOrigin(0.5, 0.5),
-        ])
-
-        button2.setSize(100, 100)
-        button2.setInteractive()
-
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            // checks if the pointer in on top of the button
-            if (button1.getBounds().contains(pointer.x, pointer.y)) {
-                spawner.transitionTo(SECONDARY_SPAWNER_STATE)
-                button1.setScale(0.8)
-            }
-
-            if (button2.getBounds().contains(pointer.x, pointer.y)) {
-                spawner.transitionTo(DEFAULT_SPAWNER_STATE)
-                button2.setScale(0.8)
-            }
+        this.add.existing(this.spawner)
+        this.spawner.createMultiple({
+            key: 'platform',
+            quantity: 20,
         })
+    }
 
-        this.input.on('pointerup', () => {
-            button1.setScale(1)
-            button2.setScale(1)
-        })
+    update() {
+        this.spawner.update()
     }
 }
