@@ -52,12 +52,13 @@ const SECONDARY_SPAWNER_STATE: SpawnerState = {
 
 export default class GameplayOld extends Phaser.Scene {
     preload() {
-        this.load.image('pearl', 'assets/bouncing-ball/1x/pearl_purple.png')
+        this.load.image('logo', 'assets/bouncing-ball/1x/pearl_purple.png')
     }
     create() {
         const spawner = new Spawner(
             this,
-            new Vector2(1100, 500),
+            new Vector2(0, 0),
+            'logo',
             {
                 eagerness: 0.001,
                 damping: 0.5,
@@ -65,10 +66,7 @@ export default class GameplayOld extends Phaser.Scene {
             },
             DEFAULT_SPAWNER_STATE
         )
-
-        const group = this.add.group(spawner, {
-            runChildUpdate: true,
-        })
+        this.add.existing(spawner)
 
         const button1 = this.add.container(100, 100, [
             this.add.circle(0, 0, 50, 0x9b7df8, 1).setStrokeStyle(2, 0x000000, 1),

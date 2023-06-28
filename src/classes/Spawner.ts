@@ -158,11 +158,11 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
     constructor(
         scene: Phaser.Scene, 
         origin: Vector2,
+        texture: string,
         interpolationConfig: SpawnerInterpolationConfig,
         state: SpawnerState = DEFAULT_SPAWNER_STATE
     ) {
         super(scene, 'Spawner')
-        scene.add.existing(this)
 
         this.origin = origin
         this.config = interpolationConfig
@@ -431,20 +431,30 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
         }
 
         // add drag handler
-        this.addMovementHandle()
+        // this.addMovementHandle(texture)
 
         // graphics fx
         this.graphics.postFX.addShine(1, 0.2, 1.3, false)
         // this.graphics.postFX.addPixelate(2)
     }
 
-    update(time: number, delta: number) {
+    preUpdate(time: number, delta: number) {
         this.graphics.clear()
 
-        this.graphics.fillStyle(0x000000, 1)
-        this.graphics.fillGradientStyle(0xffffff, 0xddaaff, 0x9b7df8, 0xeeeeff, 1)
+        // uncomment to draw the path
+        this.graphics.lineStyle(2, 0x000000, 1)
 
-        this.graphics.fillPoints(this.path.getPoints(), true)
+        // uncomment to draw the path
+        this.path.draw(this.graphics)
+
+        // uncomment to fill the path with a gradient
+        // this.graphics.fillStyle(0xffffff, 1)
+
+        // uncomment to fill the path with a gradient
+        // this.graphics.fillGradientStyle(0xffffff, 0xddaaff, 0x9b7df8, 0xeeeeff, 1)
+        
+        // uncomment to fill the path
+        // this.graphics.fillPoints(this.path.getPoints(), true)
 
         // update spines
         for (const key in this.spines) {
@@ -469,8 +479,8 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
         }
     }
 
-    private addMovementHandle() {
-        const handle = this.scene.add.sprite(this.origin.x, this.origin.y, 'pearl').setInteractive()
+    private addMovementHandle(texture: string) {
+        const handle = this.scene.add.sprite(this.origin.x, this.origin.y, texture).setInteractive()
         // handle.postFX.addPixelate(2)
         handle.postFX.addShine(1, 0.1, 1, false)
         

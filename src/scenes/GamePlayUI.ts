@@ -1,4 +1,4 @@
-import ImageButton from "@/classes/ui/Button"
+import ImageButton from "@/classes/ui/ImageButton"
 import { SceneKeys } from "./SceneController"
 import QuickSettings from "@/classes/ui/QuickSettings"
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'

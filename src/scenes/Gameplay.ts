@@ -4,7 +4,7 @@ import ScoreManager from '@/classes/ScoreManager'
 import Phaser from 'phaser'
 import { SceneKeys } from './SceneController'
 
-export default class Gameplay extends Phaser.Scene {
+export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     scene!: Phaser.Scenes.ScenePlugin
     private spawner!: PlatformSpawner
     preload() {
@@ -13,8 +13,8 @@ export default class Gameplay extends Phaser.Scene {
     }
     
     create() {
-        this.scene.launch(SceneKeys.UI)
-        this.scene.moveBelow(SceneKeys.UI)
+        this.scene.launch(SceneKeys.GameUI)
+        this.scene.moveBelow(SceneKeys.GameUI)
 
         const scoreManager = new ScoreManager(this, this.cameras.main.width / 2, 100)
 
@@ -43,5 +43,21 @@ export default class Gameplay extends Phaser.Scene {
 
     update() {
         this.spawner.update()
+    }
+
+    createOverlay(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            this.scene.launch(SceneKeys.GameUI)
+            this.scene.moveBelow(SceneKeys.GameUI)
+
+            this.game.scene.getScene(SceneKeys.GameUI).load.on('complete', () => {
+                resolve()
+            })
+        })
+    }
+
+    removeOverlay(): void {
+        this.scene.sleep(SceneKeys.GameUI)
+        this.scene.setVisible(false, SceneKeys.GameUI)
     }
 }

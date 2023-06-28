@@ -1,4 +1,6 @@
+import SceneController, { SceneKeys } from '@/scenes/SceneController'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
+import TextButton from './TextButton'
 
 export default class QuickSettings extends Phaser.GameObjects.Container {
     private targetScene: Phaser.Scene | undefined
@@ -53,6 +55,27 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
                 }),
             0,
             'left',
+            {
+                top: 20,
+                bottom: 20,
+            },
+            true
+        )
+
+        // exit to mainMenu
+        sizer.add(
+            scene.add.existing(new TextButton(scene, 0, 0, 'Exit to main menu', {
+                fontSize: '32px',
+                color: '#666666',
+                fontFamily: 'Arial',
+                fontStyle: 'bold',
+                }, () => {
+                    const controller = scene.scene.get(SceneKeys.SceneController) as SceneController
+                    controller.transitionTo(SceneKeys.Game, SceneKeys.MainMenu)
+                }
+            )).setOrigin(0.5, 0.5),
+            0,
+            'center',
             {
                 top: 20,
                 bottom: 20,
