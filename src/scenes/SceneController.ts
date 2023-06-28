@@ -1,11 +1,11 @@
-import Loading from "./Loading"
-import UI from "./GamePlayUI"
-import MainMenu from "./MainMenu"
-import Gameplay from "./Gameplay"
-import Skins from "./Skins"
-import GameSettings from "./GameSettings"
-import Credits from "./Credits"
-import OverlayUI from "./OverlayUI"
+import Loading from "./overlays/Loading"
+import UI from "./overlays/GamePlayUI"
+import MainMenu from "./menu-scenes/MainMenu"
+import Gameplay from "./gameplay-scenes/Gameplay"
+import Skins from "./menu-scenes/Skins"
+import GameSettings from "./menu-scenes/GameSettings"
+import Credits from "./menu-scenes/Credits"
+import OverlayUI from "./overlays/OverlayUI"
 
 export enum SceneKeys {
     SceneController = 'SceneController',

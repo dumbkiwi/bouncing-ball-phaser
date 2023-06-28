@@ -1,7 +1,7 @@
 import { SceneWithRexUI } from '@/types/scene'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js'
-import { SceneKeys } from './SceneController'
-import OverlayUI from './OverlayUI'
+import { SceneKeys } from '../SceneController'
+import OverlayUI from '../overlays/OverlayUI'
 
 export default class Skins extends Phaser.Scene implements SceneWithOverlay {
     rexUI!: RexUIPlugin

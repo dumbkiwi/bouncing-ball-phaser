@@ -1,6 +1,6 @@
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
-import { SceneKeys } from './SceneController'
-import OverlayUI from './OverlayUI'
+import { SceneKeys } from '../SceneController'
+import OverlayUI from '../overlays/OverlayUI'
 
 export default class Credits extends Phaser.Scene {
     rexUI!: RexUIPlugin

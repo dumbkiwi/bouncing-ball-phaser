@@ -1,4 +1,4 @@
-import { SceneKeys } from "./SceneController"
+import { SceneKeys } from "../SceneController"
 
 export default class Loading extends Phaser.Scene implements SceneWithTransition {
     private titleText!: Phaser.GameObjects.Text

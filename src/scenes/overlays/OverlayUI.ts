@@ -1,5 +1,5 @@
 import ImageButton from "@/classes/ui/ImageButton"
-import SceneController, { SceneKeys } from "./SceneController"
+import SceneController, { SceneKeys } from "../SceneController"
 
 export default class OverlayUI extends Phaser.Scene {
     private overlappingScene: SceneKeys | undefined

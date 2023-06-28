@@ -2,7 +2,7 @@ import Ball from '@/classes/Ball'
 import PlatformSpawner from '@/classes/PlatformSpawner'
 import ScoreManager from '@/classes/ScoreManager'
 import Phaser from 'phaser'
-import { SceneKeys } from './SceneController'
+import { SceneKeys } from '../SceneController'
 
 export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     scene!: Phaser.Scenes.ScenePlugin

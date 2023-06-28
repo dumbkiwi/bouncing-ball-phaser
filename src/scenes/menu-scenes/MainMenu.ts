@@ -3,7 +3,7 @@ import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js'
 
 import Vector2 = Phaser.Math.Vector2
 import TextButton from '@/classes/ui/TextButton'
-import SceneController, { SceneKeys } from './SceneController'
+import SceneController, { SceneKeys } from '../SceneController'
 
 const DEFAULT_SPACING = 30
 const DEFAULT_DISTANCE = 200
