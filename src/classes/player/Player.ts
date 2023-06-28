@@ -1,6 +1,6 @@
-import ScoreManager from './ScoreManager'
+import ScoreManager from '../score/ScoreManager'
 
-export default class Ball extends Phaser.Physics.Arcade.Image {
+export default class Player extends Phaser.Physics.Arcade.Image {
     private acceleration: Phaser.Math.Vector2
     private pointerDown = false
     private ignoreInput = false

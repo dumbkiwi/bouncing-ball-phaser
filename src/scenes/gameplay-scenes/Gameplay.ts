@@ -1,6 +1,6 @@
-import Ball from '@/classes/Ball'
-import PlatformSpawner from '@/classes/PlatformSpawner'
-import ScoreManager from '@/classes/ScoreManager'
+import Player from '@/classes/player/Player'
+import PlatformSpawner from '@/classes/platform/PlatformSpawner'
+import ScoreManager from '@/classes/score/ScoreManager'
 import Phaser from 'phaser'
 import { SceneKeys } from '../SceneController'
 
@@ -18,7 +18,7 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
 
         const scoreManager = new ScoreManager(this, this.cameras.main.width / 2, 100)
 
-        const ball = new Ball(100, this, 250, 300, 'ball', scoreManager)
+        const ball = new Player(100, this, 250, 300, 'ball', scoreManager)
         this.physics.add.existing(ball)
 
         ball.setVelocityY(-400)

@@ -1,5 +1,5 @@
 import Vector2 = Phaser.Math.Vector2
-import Spawner, { Direction, SpawnerState } from '@/classes/Spawner'
+import Spawner, { Direction, SpawnerState } from '@/classes/blob/Spawner'
 
 const DEFAULT_SPACING = 25
 const DEFAULT_DISTANCE = 150

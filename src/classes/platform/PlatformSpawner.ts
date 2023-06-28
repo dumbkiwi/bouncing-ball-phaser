@@ -1,10 +1,10 @@
-import Ball from './Ball'
+import Player from '../player/Player'
 import Platform from './Platform'
 
 export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private config: PlatformSpawnerConfig
 
-    private player: Ball
+    private player: Player
 
     private spawnArea: Phaser.GameObjects.Rectangle
     private bufferArea: Phaser.GameObjects.Rectangle
@@ -15,7 +15,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     constructor(
         world: Phaser.Physics.Arcade.World,
         scene: Phaser.Scene,
-        player: Ball,
+        player: Player,
         config: PlatformSpawnerConfig
     ) {
         super(world, scene, {

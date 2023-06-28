@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Ball from './Ball'
+import Player from '../player/Player'
 
 import Vector2 = Phaser.Math.Vector2
 
@@ -21,7 +21,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
 
     private requiredAccuracy: number | undefined
 
-    private player: Ball | undefined
+    private player: Player | undefined
     private graphics: Phaser.GameObjects.Graphics
     private mainCamera: Phaser.Cameras.Scene2D.Camera
 
@@ -92,7 +92,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         x: number,
         y: number,
         platformConfig: PlatformConfig,
-        collisionTarget: Ball
+        collisionTarget: Player
     ): void {
         this.enableBody(true, x, y, true, true)
 

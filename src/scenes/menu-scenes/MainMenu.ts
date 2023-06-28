@@ -1,4 +1,4 @@
-import Spawner, { Direction, SpawnerState } from '@/classes/Spawner'
+import Spawner, { Direction, SpawnerState } from '@/classes/blob/Spawner'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js'
 
 import Vector2 = Phaser.Math.Vector2

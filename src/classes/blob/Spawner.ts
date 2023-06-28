@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import Vector2 = Phaser.Math.Vector2
 import CubicBezier = Phaser.Curves.CubicBezier
 import Line = Phaser.Curves.Line
-import { SecondOrderDynamicsScalar } from './SecondOrderDynamics'
+import { SecondOrderDynamicsScalar } from '../physics/SecondOrderDynamics'
 
 export enum Direction {
     TOP,
