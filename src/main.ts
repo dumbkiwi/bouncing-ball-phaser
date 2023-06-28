@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import type { Types } from "phaser"
-import SceneController from './scenes/SceneManager'
+import SceneController from './scenes/SceneController'
 // import PlatformTestScene from './scenes/PlatformTestScene'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 
