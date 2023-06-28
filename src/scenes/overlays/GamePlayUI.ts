@@ -1,6 +1,6 @@
-import ImageButton from "@/classes/ui/ImageButton"
-import { SceneKeys } from "../SceneController"
-import QuickSettings from "@/classes/ui/QuickSettings"
+import ImageButton from '@/classes/ui/ImageButton'
+import { SceneKeys } from '../SceneController'
+import QuickSettings from '@/classes/ui/QuickSettings'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 
 export default class GameOver extends Phaser.Scene {
@@ -12,7 +12,7 @@ export default class GameOver extends Phaser.Scene {
     private settingsTween: Phaser.Tweens.Tween | undefined
 
     // private rexContainer:
-    
+
     constructor() {
         super('GameOver')
 
@@ -20,9 +20,9 @@ export default class GameOver extends Phaser.Scene {
     }
 
     public preload(): void {
-        this.load.svg('pause-button', 'assets/ui/pause.svg', {width: 100, height: 100})
-        this.load.svg('play-button', 'assets/ui/play.svg', {width: 100, height: 100})
-        this.load.svg('volume-button', 'assets/ui/volume.svg', {width: 50, height: 50})
+        this.load.svg('pause-button', 'assets/ui/pause.svg', { width: 100, height: 100 })
+        this.load.svg('play-button', 'assets/ui/play.svg', { width: 100, height: 100 })
+        this.load.svg('volume-button', 'assets/ui/volume.svg', { width: 50, height: 50 })
     }
 
     public create(): void {
@@ -35,20 +35,21 @@ export default class GameOver extends Phaser.Scene {
 
         this.hideSettings(true)
 
-        const button = this.add.existing(new ImageButton(this, 80, 80, 'pause-button', () => {
-            this.isPaused = !this.isPaused
+        const button = this.add.existing(
+            new ImageButton(this, 80, 80, 'pause-button', () => {
+                this.isPaused = !this.isPaused
 
-            if (this.isPaused) {
-                this.showSettings()
-                button.setTexture('play-button')
-                this.scene.pause(SceneKeys.Game)
-            } else {
-                this.hideSettings()
-                button.setTexture('pause-button')
-                this.scene.resume(SceneKeys.Game)
-            }
-
-        }))
+                if (this.isPaused) {
+                    this.showSettings()
+                    button.setTexture('play-button')
+                    this.scene.pause(SceneKeys.Game)
+                } else {
+                    this.hideSettings()
+                    button.setTexture('pause-button')
+                    this.scene.resume(SceneKeys.Game)
+                }
+            })
+        )
 
         button.setAlpha(0.5)
     }

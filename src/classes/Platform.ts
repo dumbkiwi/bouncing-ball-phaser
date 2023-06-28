@@ -230,10 +230,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         const platformExtentL = this.mPlatform.position.x - this.mPlatform.size.x / 2
         const platformExtentR = this.mPlatform.position.x + this.mPlatform.size.x / 2
 
-        if (
-            playerExtentL === undefined ||
-            playerExtentR === undefined
-        ) {
+        if (playerExtentL === undefined || playerExtentR === undefined) {
             throw new Error('undefined extents')
         }
 
@@ -249,16 +246,16 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         // change platform color
         if (isAccurate) {
             this.onInaccurateCollision(isLeft)
-            
+
             // reset multiplier
             this.player.getScoreManager().resetMultiplier()
         } else {
             this.onAccurateCollision()
         }
-        
+
         // bounce player
         this.bouncePlayer()
-        
+
         // add score
         this.player.getScoreManager().addScore()
     }

@@ -1,22 +1,25 @@
-import Loading from "./overlays/Loading"
-import UI from "./overlays/GamePlayUI"
-import MainMenu from "./menu-scenes/MainMenu"
-import Gameplay from "./gameplay-scenes/Gameplay"
-import Skins from "./menu-scenes/Skins"
-import GameSettings from "./menu-scenes/GameSettings"
-import Credits from "./menu-scenes/Credits"
-import OverlayUI from "./overlays/OverlayUI"
+import Loading from './overlays/Loading'
+import UI from './overlays/GamePlayUI'
+import MainMenu from './menu-scenes/MainMenu'
+import Gameplay from './gameplay-scenes/Gameplay'
+import Skins from './menu-scenes/Skins'
+import GameSettings from './menu-scenes/GameSettings'
+import Credits from './menu-scenes/Credits'
+import OverlayUI from './overlays/OverlayUI'
 
 export enum SceneKeys {
-    SceneController = 'SceneController',
-    Loading = 'Loading',
-    MainMenu = 'MainMenu',
-    SkinSelection = 'SkinSelection',
-    GameSettings = 'GameSettings',
+    // scenes
     Credits = 'Credits',
     Game = 'Game',
+    GameSettings = 'GameSettings',
+    MainMenu = 'MainMenu',
+    SceneController = 'SceneController',
+    SkinSelection = 'SkinSelection',
+
+    // overlays
     GameUI = 'GameOver',
-    OverlayingUI = 'OverlayingUI'
+    Loading = 'Loading',
+    OverlayingUI = 'OverlayingUI',
 }
 
 export default class SceneController extends Phaser.Scene {
@@ -27,13 +30,16 @@ export default class SceneController extends Phaser.Scene {
     }
 
     preload() {
-        this.game.scene.add(SceneKeys.MainMenu, MainMenu, false)
-        this.game.scene.add(SceneKeys.Game, Gameplay, false)
-        this.game.scene.add(SceneKeys.GameUI, UI, false)
-        this.game.scene.add(SceneKeys.SkinSelection, Skins, false)
-        this.game.scene.add(SceneKeys.GameSettings, GameSettings, false)
+        // scenes
         this.game.scene.add(SceneKeys.Credits, Credits, false)
-        this.game.scene.add(SceneKeys.OverlayingUI,OverlayUI, false)
+        this.game.scene.add(SceneKeys.Game, Gameplay, false)
+        this.game.scene.add(SceneKeys.MainMenu, MainMenu, false)
+        this.game.scene.add(SceneKeys.GameSettings, GameSettings, false)
+        this.game.scene.add(SceneKeys.SkinSelection, Skins, false)
+
+        // overlays
+        this.game.scene.add(SceneKeys.GameUI, UI, false)
+        this.game.scene.add(SceneKeys.OverlayingUI, OverlayUI, false)
         this.game.scene.add(SceneKeys.Loading, Loading, true)
     }
 
@@ -64,19 +70,18 @@ export default class SceneController extends Phaser.Scene {
             console.warn('Cannot transition from loading screen')
             return
         }
-        
+
         this.scene.bringToTop(SceneKeys.Loading)
         loadingScene.transitionIn().then(() => {
             // stop current scene
             if (from) {
                 const currentScene = this.game.scene.getScene(from) as SceneWithOverlay
                 currentScene.removeOverlay()
-                
+
                 this.scene.sleep(from)
                 this.scene.setVisible(false, from)
             }
 
-            
             // start next scene
             this.scene.launch(to)
 
@@ -87,7 +92,6 @@ export default class SceneController extends Phaser.Scene {
             })
         })
 
-        
         loadingScene.events.on('transitioncomplete', () => {
             nextScene.load.once('complete', () => {
                 this.scene.transition({

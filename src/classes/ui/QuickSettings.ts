@@ -31,28 +31,53 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
         sizer.addBackground(scene.add.rectangle(0, 0, width, height, 0xffffff, 1))
 
         // title
-        sizer.add(scene.add.text(0, 0, 'Settings', {fontSize: '64px', color: '#666666', fontStyle: 'bold', fontFamily: 'Arial'}), 0, 'left')
+        sizer.add(
+            scene.add.text(0, 0, 'Settings', {
+                fontSize: '64px',
+                color: '#666666',
+                fontStyle: 'bold',
+                fontFamily: 'Arial',
+            }),
+            0,
+            'left'
+        )
 
         // volume
         sizer.add(
-            rexUI.add.sizer({orientation: 'x',})
-                .add(scene.add.text(0, 0, 'Volume', {fontSize: '32px', color: '#666666', fontFamily: 'Arial'}), 0, 'center')
+            rexUI.add
+                .sizer({ orientation: 'x' })
+                .add(
+                    scene.add.text(0, 0, 'Volume', {
+                        fontSize: '32px',
+                        color: '#666666',
+                        fontFamily: 'Arial',
+                    }),
+                    0,
+                    'center'
+                )
                 // volume slider
-                .add(rexUI.add.slider({
-                    width: 200,
-                    height: 20,
-                    orientation: 'x',
-                    track: rexUI.add.roundRectangle(0, 0, 0, 0, 10, 0xaaaaaa),
-                    indicator: rexUI.add.roundRectangle(0, 0, 0, 0, 6, 0x666666),
-                    thumb: rexUI.add.roundRectangle(0, 0, 0, 0, 16, 0x666666),
-                    valuechangeCallback: (value: number) => {
-                        this.changeVolume(value)
-                    },
-                    input: 'click',
-                }).setValue(1), 1, 'center', {
-                    left: 20,
-                    right: 20,
-                }),
+                .add(
+                    rexUI.add
+                        .slider({
+                            width: 200,
+                            height: 20,
+                            orientation: 'x',
+                            track: rexUI.add.roundRectangle(0, 0, 0, 0, 10, 0xaaaaaa),
+                            indicator: rexUI.add.roundRectangle(0, 0, 0, 0, 6, 0x666666),
+                            thumb: rexUI.add.roundRectangle(0, 0, 0, 0, 16, 0x666666),
+                            valuechangeCallback: (value: number) => {
+                                this.changeVolume(value)
+                            },
+                            input: 'click',
+                        })
+                        .setValue(1),
+                    1,
+                    'center',
+                    {
+                        left: 20,
+                        right: 20,
+                    }
+                ),
             0,
             'left',
             {
@@ -64,16 +89,28 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
 
         // exit to mainMenu
         sizer.add(
-            scene.add.existing(new TextButton(scene, 0, 0, 'Exit to main menu', {
-                fontSize: '32px',
-                color: '#666666',
-                fontFamily: 'Arial',
-                fontStyle: 'bold',
-                }, () => {
-                    const controller = scene.scene.get(SceneKeys.SceneController) as SceneController
-                    controller.transitionTo(SceneKeys.Game, SceneKeys.MainMenu)
-                }
-            )).setOrigin(0.5, 0.5),
+            scene.add
+                .existing(
+                    new TextButton(
+                        scene,
+                        0,
+                        0,
+                        'Exit to main menu',
+                        {
+                            fontSize: '32px',
+                            color: '#666666',
+                            fontFamily: 'Arial',
+                            fontStyle: 'bold',
+                        },
+                        () => {
+                            const controller = scene.scene.get(
+                                SceneKeys.SceneController
+                            ) as SceneController
+                            controller.transitionTo(SceneKeys.Game, SceneKeys.MainMenu)
+                        }
+                    )
+                )
+                .setOrigin(0.5, 0.5),
             0,
             'center',
             {

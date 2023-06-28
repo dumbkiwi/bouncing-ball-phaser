@@ -25,38 +25,44 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, [], {
-            runChildUpdate: true
+            runChildUpdate: true,
         })
 
         scene.add.existing(this)
 
-        const highScore = scene.add.text(x, y, '0', {
-            fontFamily: 'Arial',
-            fontSize: 64,
-            fontStyle: 'bold',
-            color: '#aaaaaa',
-            align: 'center',
-            }).setOrigin(0.5)
+        const highScore = scene.add
+            .text(x, y, '0', {
+                fontFamily: 'Arial',
+                fontSize: 64,
+                fontStyle: 'bold',
+                color: '#aaaaaa',
+                align: 'center',
+            })
+            .setOrigin(0.5)
 
-        const score = scene.add.text(x, y + 120, '0', {
-            fontFamily: 'Arial',
-            fontSize: 128,
-            fontStyle: 'bold',
-            color: '#888888',
-            align: 'center'
-            }).setOrigin(0.5)
+        const score = scene.add
+            .text(x, y + 120, '0', {
+                fontFamily: 'Arial',
+                fontSize: 128,
+                fontStyle: 'bold',
+                color: '#888888',
+                align: 'center',
+            })
+            .setOrigin(0.5)
 
-        const multiplier = scene.add.text(x, y + 240, 'x1', {
-            fontFamily: 'Arial',
-            fontSize: 92,
-            fontStyle: 'bold',
-            color: '#888888',
-            align: 'center'
-            }).setOrigin(0.5)
+        const multiplier = scene.add
+            .text(x, y + 240, 'x1', {
+                fontFamily: 'Arial',
+                fontSize: 92,
+                fontStyle: 'bold',
+                color: '#888888',
+                align: 'center',
+            })
+            .setOrigin(0.5)
 
-            this.add(highScore)
-            this.add(score)
-            this.add(multiplier)
+        this.add(highScore)
+        this.add(score)
+        this.add(multiplier)
 
         this.score = 0
         this.highScore = this.loadScore()
@@ -67,7 +73,7 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         this.scoreText = score
         this.multiplierText = multiplier
     }
-    
+
     public addScore() {
         this.consecutiveHits += 1
 
@@ -95,7 +101,7 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         this.score = 0
         this.scoreText.setText(`${this.score}`)
     }
-    
+
     public saveScore() {
         localStorage.setItem('score', this.score.toString())
     }

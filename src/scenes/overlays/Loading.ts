@@ -1,4 +1,4 @@
-import { SceneKeys } from "../SceneController"
+import { SceneKeys } from '../SceneController'
 
 export default class Loading extends Phaser.Scene implements SceneWithTransition {
     private titleText!: Phaser.GameObjects.Text
@@ -10,7 +10,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
     }
 
     public preload(): void {
-        this.load.svg('loading-logo', 'assets/loadingball.svg', {width: 300, height: 300})
+        this.load.svg('loading-logo', 'assets/loadingball.svg', { width: 300, height: 300 })
     }
 
     public create(): void {
@@ -18,14 +18,18 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
 
         const bg = this.add.rectangle(0, 0, camera.width, camera.height, 0xffffff).setOrigin(0)
 
-        const logo = this.add.image(camera.width / 2, camera.height / 2 - 100, 'loading-logo').setAlpha(0.5)
+        const logo = this.add
+            .image(camera.width / 2, camera.height / 2 - 100, 'loading-logo')
+            .setAlpha(0.5)
 
-        const titleText = this.add.text(camera.width / 2, camera.height / 2 + 150, 'Bouncing Ball', {
-            fontFamily: 'Arial',
-            fontSize: 64,
-            color: '#888888',
-            fontStyle: 'bold',
-        }).setOrigin(0.5)
+        const titleText = this.add
+            .text(camera.width / 2, camera.height / 2 + 150, 'Bouncing Ball', {
+                fontFamily: 'Arial',
+                fontSize: 64,
+                color: '#888888',
+                fontStyle: 'bold',
+            })
+            .setOrigin(0.5)
 
         this.events.on('transitionstart', (_fromScene: Phaser.Scene, _duration: number) => {
             this.transitionIn()
@@ -70,10 +74,10 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
                 repeat: 0,
                 onComplete: () => {
                     resolve()
-                }
+                },
             })
         })
-        
+
         const titlePromise = new Promise<void>((resolve) => {
             // tween titleText from the bottom
             this.tweens.add({
@@ -84,7 +88,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
                 repeat: 0,
                 onComplete: () => {
                     resolve()
-                }
+                },
             })
         })
 
@@ -98,7 +102,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
                 repeat: 0,
                 onComplete: () => {
                     resolve()
-                }
+                },
             })
         })
 
@@ -117,7 +121,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
                 repeat: 0,
                 onComplete: () => {
                     resolve()
-                }
+                },
             })
         })
 
@@ -131,7 +135,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
                 repeat: 0,
                 onComplete: () => {
                     resolve()
-                }
+                },
             })
         })
 
@@ -146,7 +150,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
                 repeat: 0,
                 onComplete: () => {
                     resolve()
-                }
+                },
             })
         })
 

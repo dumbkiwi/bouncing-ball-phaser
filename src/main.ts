@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import type { Types } from "phaser"
+import type { Types } from 'phaser'
 import SceneController from './scenes/SceneController'
 // import PlatformTestScene from './scenes/PlatformTestScene'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
@@ -22,16 +22,16 @@ const GAME_CONFIG: Types.Core.GameConfig = {
             {
                 key: 'rexUI',
                 plugin: RexUIPlugin,
-                mapping: 'rexUI'
-            }
-        ]
+                mapping: 'rexUI',
+            },
+        ],
     },
     physics: {
         default: 'arcade',
         arcade: {
             // debug: true,
             gravity: { y: 600 },
-        }
+        },
     },
     backgroundColor: '#ffffff',
     scale: SCALE_OPTS,

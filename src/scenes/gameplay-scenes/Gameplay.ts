@@ -11,7 +11,7 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
         this.load.image('ball', 'assets/bouncing-ball/1x/pearl_light.png')
         this.load.svg('platform', 'assets/shapes/square.svg')
     }
-    
+
     create() {
         this.scene.launch(SceneKeys.GameUI)
         this.scene.moveBelow(SceneKeys.GameUI)

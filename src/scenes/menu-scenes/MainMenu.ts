@@ -8,7 +8,6 @@ import SceneController, { SceneKeys } from '../SceneController'
 const DEFAULT_SPACING = 30
 const DEFAULT_DISTANCE = 200
 
-
 const REST: SpawnerState = {
     spacing: {
         [Direction.TOP]: DEFAULT_SPACING,
@@ -134,11 +133,13 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
     }
 
     public preload(): void {
-        this.load.svg('title-logo', 'assets/volleyball.svg', {width: 150, height: 150})
+        this.load.svg('title-logo', 'assets/volleyball.svg', { width: 150, height: 150 })
     }
 
     public create(): void {
-        this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0xffffff, 1).setOrigin(0, 0)
+        this.add
+            .rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0xffffff, 1)
+            .setOrigin(0, 0)
 
         const logoX = this.cameras.main.centerX
         const logoY = 400
@@ -155,7 +156,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
             },
             REST
         )
-            
+
         this.add.existing(spawner)
 
         const logoSprite = this.add.sprite(logoX, logoY, 'title-logo')
@@ -189,7 +190,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
             },
             space: {
                 bottom: 100,
-            }
+            },
         })
 
         this.createWindow(sizer)
@@ -257,21 +258,30 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
             this.avatar.transitionTo(REST)
         })
 
-        sizer.add(playButton, 0, 'center', {top: 20, bottom: 20})
-        sizer.add(skinsButton, 0, 'center', {top: 20, bottom: 20})
-        sizer.add(settingsButton, 0, 'center', {top: 20, bottom: 20})
-        sizer.add(creditsButton, 0, 'center', {top: 20, bottom: 20})
+        sizer.add(playButton, 0, 'center', { top: 20, bottom: 20 })
+        sizer.add(skinsButton, 0, 'center', { top: 20, bottom: 20 })
+        sizer.add(settingsButton, 0, 'center', { top: 20, bottom: 20 })
+        sizer.add(creditsButton, 0, 'center', { top: 20, bottom: 20 })
 
         return sizer
     }
 
     private createMenuButton(text: string, callback: () => void) {
-        return this.add.existing(new TextButton(this, 0, 0, text, {
-            fontSize: 60,
-            fontStyle: 'bold',
-            fontFamily: 'Arial',
-            color: '#666666',
-        }, callback))
+        return this.add.existing(
+            new TextButton(
+                this,
+                0,
+                0,
+                text,
+                {
+                    fontSize: 60,
+                    fontStyle: 'bold',
+                    fontFamily: 'Arial',
+                    color: '#666666',
+                },
+                callback
+            )
+        )
     }
 
     createOverlay(): Promise<void> {

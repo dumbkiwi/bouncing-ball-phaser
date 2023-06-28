@@ -1,6 +1,13 @@
 export default class TextButton extends Phaser.GameObjects.Text {
     private scaleTween: Phaser.Tweens.Tween
-    constructor(scene: Phaser.Scene, x: number, y: number, text: string | string[], style: Phaser.Types.GameObjects.Text.TextStyle, callback?: () => void) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        text: string | string[],
+        style: Phaser.Types.GameObjects.Text.TextStyle,
+        callback?: () => void
+    ) {
         super(scene, x, y, text, style)
 
         this.setInteractive()

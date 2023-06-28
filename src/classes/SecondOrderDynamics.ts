@@ -25,8 +25,8 @@ export default class SecondOrderDynamics {
     constructor(f: number, z: number, r: number, xi: Vector2) {
         // compute constants
         this.k1 = z / (PI * f)
-        this.k2 = 1 / ((2 * PI * f) * (2 * PI * f))
-        this.k3 = r * z / (2 * PI * f)
+        this.k2 = 1 / (2 * PI * f * (2 * PI * f))
+        this.k3 = (r * z) / (2 * PI * f)
 
         // initialize state variables
         this.xp = new Vector2(xi.x, xi.y)
@@ -37,25 +37,24 @@ export default class SecondOrderDynamics {
     public update(T: number, x: Vector2, xd: Vector2 | null = null) {
         if (xd === null) {
             // estimate velocity
-            xd = new Vector2(
-                (x.x - this.xp.x) / T,
-                (x.y - this.xp.y) / T
-            )
+            xd = new Vector2((x.x - this.xp.x) / T, (x.y - this.xp.y) / T)
 
             this.xp.x = x.x
             this.xp.y = x.y
         }
 
         // clamp k2 to guarantee stability without jitter
-        const k2_stable = Math.max(this.k2, T * T / 2 + T * this.k1 / 2, T * this.k1)
+        const k2_stable = Math.max(this.k2, (T * T) / 2 + (T * this.k1) / 2, T * this.k1)
 
         // integrate position by velocity
         this.y.x = this.y.x + T * this.yd.x
         this.y.y = this.y.y + T * this.yd.y
 
         // integrate velocity by acceleration
-        this.yd.x = this.yd.x + T * (x.x + this.k3 * xd.x - this.y.x - this.k1 * this.yd.x) / k2_stable
-        this.yd.y = this.yd.y + T * (x.y + this.k3 * xd.y - this.y.y - this.k1 * this.yd.y) / k2_stable
+        this.yd.x =
+            this.yd.x + (T * (x.x + this.k3 * xd.x - this.y.x - this.k1 * this.yd.x)) / k2_stable
+        this.yd.y =
+            this.yd.y + (T * (x.y + this.k3 * xd.y - this.y.y - this.k1 * this.yd.y)) / k2_stable
 
         return this.y
     }
@@ -84,8 +83,8 @@ export class SecondOrderDynamicsScalar {
     constructor(f: number, z: number, r: number, xi: number) {
         // compute constants
         this.k1 = z / (PI * f)
-        this.k2 = 1 / ((2 * PI * f) * (2 * PI * f))
-        this.k3 = r * z / (2 * PI * f)
+        this.k2 = 1 / (2 * PI * f * (2 * PI * f))
+        this.k3 = (r * z) / (2 * PI * f)
 
         // initialize state variables
         this.xp = xi
@@ -102,13 +101,13 @@ export class SecondOrderDynamicsScalar {
         }
 
         // clamp k2 to guarantee stability without jitter
-        const k2_stable = Math.max(this.k2, T * T / 2 + T * this.k1 / 2, T * this.k1)
+        const k2_stable = Math.max(this.k2, (T * T) / 2 + (T * this.k1) / 2, T * this.k1)
 
         // integrate position by velocity
         this.y = this.y + T * this.yd
 
         // integrate velocity by acceleration
-        this.yd = this.yd + T * (x + this.k3 * xd - this.y - this.k1 * this.yd) / k2_stable
+        this.yd = this.yd + (T * (x + this.k3 * xd - this.y - this.k1 * this.yd)) / k2_stable
 
         return this.y
     }

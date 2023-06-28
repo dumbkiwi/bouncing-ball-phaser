@@ -1,9 +1,9 @@
 interface SceneWithTransition extends Phaser.Scene {
-    transitionIn: () => Promise<void>;
-    transitionOut: () => Promise<void>;
+    transitionIn: () => Promise<void>
+    transitionOut: () => Promise<void>
 }
 
 interface SceneWithOverlay extends Phaser.Scene {
-    createOverlay: () => Promise<void>;
-    removeOverlay: () => void;
+    createOverlay: () => Promise<void>
+    removeOverlay: () => void
 }

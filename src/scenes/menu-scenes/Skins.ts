@@ -93,7 +93,7 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
 
         sizer.layout()
     }
- 
+
     createOverlay(): Promise<void> {
         return new Promise((resolve) => {
             this.scene.launch(SceneKeys.OverlayingUI)

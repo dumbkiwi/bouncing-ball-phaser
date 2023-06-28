@@ -156,7 +156,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
     private graphics: Phaser.GameObjects.Graphics
 
     constructor(
-        scene: Phaser.Scene, 
+        scene: Phaser.Scene,
         origin: Vector2,
         texture: string,
         interpolationConfig: SpawnerInterpolationConfig,
@@ -274,7 +274,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.TOP]
-                )
+                ),
             },
             [Direction.TOP_RIGHT]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -293,7 +293,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.TOP_RIGHT]
-                )
+                ),
             },
             [Direction.RIGHT]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -312,7 +312,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.RIGHT]
-                )
+                ),
             },
             [Direction.DOWN_RIGHT]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -331,7 +331,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.DOWN_RIGHT]
-                )
+                ),
             },
             [Direction.DOWN]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -350,7 +350,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.DOWN]
-                )
+                ),
             },
             [Direction.DOWN_LEFT]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -369,7 +369,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.DOWN_LEFT]
-                )
+                ),
             },
             [Direction.LEFT]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -388,7 +388,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.LEFT]
-                )
+                ),
             },
             [Direction.TOP_LEFT]: {
                 t: INITIAL_TWEEN_VALUE,
@@ -407,10 +407,10 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
                     this.config.damping,
                     this.config.anticipation,
                     defaultSpacing[Direction.TOP_LEFT]
-                )
+                ),
             },
         }
-        
+
         // initialize tweeners
         this.tweeners = {} as {
             [key in Direction]: Phaser.Tweens.Tween
@@ -452,7 +452,7 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
 
         // uncomment to fill the path with a gradient
         // this.graphics.fillGradientStyle(0xffffff, 0xddaaff, 0x9b7df8, 0xeeeeff, 1)
-        
+
         // uncomment to fill the path
         // this.graphics.fillPoints(this.path.getPoints(), true)
 
@@ -461,10 +461,16 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
             const enumKey = parseInt(key) as Direction
             const spine = this.spines[enumKey]
 
-            const newDistance = spine.distanceManager.update(delta, this.currentState.distance[enumKey])
+            const newDistance = spine.distanceManager.update(
+                delta,
+                this.currentState.distance[enumKey]
+            )
             spine.followerDistance = newDistance
 
-            const newSpacing = spine.spacingManager.update(delta, this.currentState.spacing[enumKey])
+            const newSpacing = spine.spacingManager.update(
+                delta,
+                this.currentState.spacing[enumKey]
+            )
             spine.followerSpacing = newSpacing
 
             setBezierExtent(
@@ -483,17 +489,25 @@ export default class Spawner extends Phaser.GameObjects.GameObject {
         const handle = this.scene.add.sprite(this.origin.x, this.origin.y, texture).setInteractive()
         // handle.postFX.addPixelate(2)
         handle.postFX.addShine(1, 0.1, 1, false)
-        
+
         handle.setData('vector', this.origin)
-        
+
         this.scene.input.setDraggable(handle)
 
-        this.scene.input.on('drag', (_pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.Arc, dragX: number, dragY: number) => {
-            gameObject.x = dragX
-            gameObject.y = dragY
+        this.scene.input.on(
+            'drag',
+            (
+                _pointer: Phaser.Input.Pointer,
+                gameObject: Phaser.GameObjects.Arc,
+                dragX: number,
+                dragY: number
+            ) => {
+                gameObject.x = dragX
+                gameObject.y = dragY
 
-            gameObject.data.get('vector').set(dragX, dragY)
-        })
+                gameObject.data.get('vector').set(dragX, dragY)
+            }
+        )
 
         return handle
     }

@@ -1,4 +1,4 @@
-import ScoreManager from "./ScoreManager"
+import ScoreManager from './ScoreManager'
 
 export default class Ball extends Phaser.Physics.Arcade.Image {
     private acceleration: Phaser.Math.Vector2
@@ -6,7 +6,14 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
     private ignoreInput = false
     private scoreManager: ScoreManager
 
-    constructor(acceleration: number, scene: Phaser.Scene, x: number, y: number, texture: string, scoreManager: ScoreManager) {
+    constructor(
+        acceleration: number,
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        texture: string,
+        scoreManager: ScoreManager
+    ) {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
@@ -31,12 +38,19 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
         this.scoreManager = scoreManager
     }
 
-    onCreate () {
+    onCreate() {
         this.setBounce(1)
         this.setCollideWorldBounds(true)
 
         // add touch interaction
-        const rectangle = this.scene.add.rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height, 0xff0000, 0)
+        const rectangle = this.scene.add.rectangle(
+            0,
+            0,
+            this.scene.cameras.main.width,
+            this.scene.cameras.main.height,
+            0xff0000,
+            0
+        )
 
         rectangle.setOrigin(0, 0)
 
@@ -47,7 +61,7 @@ export default class Ball extends Phaser.Physics.Arcade.Image {
         })
     }
 
-    onUpdate () {
+    onUpdate() {
         if (!this.ignoreInput && this.pointerDown) {
             this.body?.velocity.add(this.acceleration)
         }
