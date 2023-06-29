@@ -41,7 +41,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                     this.deactivatePlatform(gameObject, true, true)
                 }
             },
-            maxSize: 5,
+            maxSize: 20,
             runChildUpdate: true,
         })
 
@@ -70,7 +70,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 }
 
                 // if it is an accurate hit, add chainable score
-                const { isAccurate } = colliderPlatform.applyCollision(
+                const isAccurate = colliderPlatform.applyCollision(
                     player,
                     this.config.requiredAcc
                 )
@@ -245,6 +245,14 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         )
     }
 
+    private updateSpawnArea(config: PlatformSpawnerConfig): void {
+        const spawnWidth = config.maxGap - config.minGap
+        const spawnX = this.mainCamera.width + config.minGap + spawnWidth / 2
+        const spawnY = this.mainCamera.height / 2
+        this.spawnArea.setPosition(spawnX, spawnY)
+        this.spawnArea.setSize(spawnWidth, this.mainCamera.height)
+    }
+
     private createBufferArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
         // add rectangle collider to the world, offset by the camera's width
         const bufferWidth = config.maxGap
@@ -258,6 +266,14 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             0xff0000,
             0.5
         )
+    }
+
+    private updateBufferArea(config: PlatformSpawnerConfig): void {
+        const bufferWidth = config.maxGap
+        const bufferX = this.mainCamera.width + bufferWidth / 2
+        const bufferY = this.mainCamera.height / 2
+        this.bufferArea.setPosition(bufferX, bufferY)
+        this.bufferArea.setSize(bufferWidth, this.mainCamera.height)
     }
 
     private createDespawnArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
@@ -275,9 +291,12 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         )
     }
 
-    public prespawnPlatform(): void {
-        // prespawn platforms
-        this.spawnPlatform(this.mainCamera.width / 2, (this.mainCamera.height / 3) * 2)
+    private updateDespawnArea(config: PlatformSpawnerConfig): void {
+        const despawnWidth = config.maxGap
+        const despawnX = -despawnWidth / 2 - config.minGap - 100
+        const despawnY = this.mainCamera.height / 2
+        this.despawnArea.setPosition(despawnX, despawnY)
+        this.despawnArea.setSize(despawnWidth, this.mainCamera.height)
     }
 
     private spawnPlatform(x?: number, y?: number): Platform | null {
@@ -306,11 +325,15 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             Math.random() * (this.config.maxPlatformHeight - this.config.minPlatformHeight) +
             this.config.minPlatformHeight
 
-        platform.resetConfig({
+        platform.resetConfig(this.config.requiredAcc, {
             width,
             height,
             extraWidth: 0,
-            requiredAcc: this.config.requiredAcc,
+            platformColor: {
+                baseColor: this.config.platformColor.baseColor,
+                accurateColor: this.config.platformColor.accurateColor,
+                inaccurateColor: this.config.platformColor.inaccurateColor,
+            }
         })
 
         // set the platform to be active and awake
@@ -358,5 +381,25 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         hideGameObject?: boolean
     ) {
         platform.disableBody(disableGameObject, hideGameObject)
+    }
+
+    /**
+     * Prespawn platforms.
+     */
+    public prespawnPlatform(): void {
+        // prespawn platforms
+        this.spawnPlatform(this.mainCamera.width / 2, (this.mainCamera.height / 3) * 2)
+    }
+
+    /**
+     * Change the platform spawner config.
+     * @param config Platform spawner config.
+     */
+    public setConfig(config: PlatformSpawnerConfig) {
+        this.config = config
+
+        this.updateSpawnArea(config)
+        this.updateBufferArea(config)
+        this.updateDespawnArea(config)
     }
 }

@@ -1,6 +1,6 @@
 export class StaticState implements GameplayState {
     getPlayerAcceleration(): number {
-        return 0
+        return 200
     }
 
     getPlatformVelocity(): number {

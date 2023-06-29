@@ -5,8 +5,8 @@ import ScoreManager from '../score/ScoreManager'
 export default class Player extends Phaser.Physics.Arcade.Image {
     private acceleration: Vector2
 
-    private pointerDown = false
-    private ignoreInput = false
+    private pointerDown: boolean
+    private ignoreInput: boolean
 
     private scoreManager: ScoreManager
     private gameState: GameplayStateMachine
@@ -60,6 +60,9 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         const emitter = this.createEmitter()
         const deathEmitter = this.createDeathEmitterFlow()
         const deathEmitterExpl = this.createDeathEmitterExpl()
+
+        this.pointerDown = false
+        this.ignoreInput = false
 
         this.acceleration = new Vector2(0, 0)
         this.scoreManager = scoreManager

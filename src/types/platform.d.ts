@@ -1,3 +1,9 @@
+type PlatformColorConfig = {
+    baseColor: number
+    accurateColor: number
+    inaccurateColor: number
+}
+
 type PlatformSpawnerConfig = {
     minGap: number
     maxGap: number
@@ -8,11 +14,12 @@ type PlatformSpawnerConfig = {
     minPlatformWidth: number
     maxPlatformWidth: number
     requiredAcc: number
+    platformColor: PlatformColorConfig
 }
 
 type PlatformConfig = {
     width: number
     height: number
     extraWidth: number
-    requiredAcc: number
+    platformColor: PlatformColorConfig
 }
