@@ -109,9 +109,17 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
         this.shadowColor = gameState.getNextPlatformShadowColor()
         this.colorMap = colorMap
+
+        this.scene.time.addEvent({
+            callback: () => {
+                this.onUpdate()
+            },
+            delay: 50,
+            loop: true,
+        })
     }
 
-    update() {
+    onUpdate() {
         // if there is no platform in the buffer area, create one
         const {
             left: bufferLeft,

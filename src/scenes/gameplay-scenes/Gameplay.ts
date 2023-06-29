@@ -82,7 +82,7 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     }
 
     update() {
-        this.spawner.update()
+        // this.spawner.update()
     }
 
     createOverlay(): Promise<void> {
