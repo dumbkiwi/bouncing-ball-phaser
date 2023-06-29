@@ -23,6 +23,8 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
     private scoreText: Phaser.GameObjects.Text
     private multiplierText: Phaser.GameObjects.Text
 
+    private scoreEvent: Phaser.Events.EventEmitter
+
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, [], {
             runChildUpdate: true,
@@ -72,16 +74,26 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         this.highScoreText = highScore
         this.scoreText = score
         this.multiplierText = multiplier
+
+        this.scoreEvent = new Phaser.Events.EventEmitter()
     }
 
-    public addScore() {
-        this.consecutiveHits += 1
-
-        if (this.consecutiveHits in MULTIPLIER_THRESHOLD) {
-            this.multiplier = MULTIPLIER_THRESHOLD[this.consecutiveHits]
-            this.multiplierText.setText(`x${this.multiplier}`)
+    /**
+     * Increment the score and apply multiplier if applicable
+     * @param isChainable whether the score is chainable
+     * @returns the new score
+     */
+    public tryAddScore(isChainable = false): number {
+        if (isChainable) {
+            this.tryIncrementMultiplier()
+        } else {
+            this.resetMultiplier()
         }
 
+        return this.addScore()
+    }
+
+    private addScore(): number {
         this.score += 1 * this.multiplier
         this.scoreText.setText(this.score.toString())
 
@@ -89,11 +101,28 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
             this.highScore = this.score
             this.highScoreText.setText(`${this.highScore}`)
         }
+
+        this.emitScoreChange()
+
+        return this.score
     }
 
     public resetMultiplier() {
         this.consecutiveHits = 0
         this.multiplier = 1
+        this.multiplierText.setText(`x${this.multiplier}`)
+    }
+
+    private tryIncrementMultiplier() {
+        this.consecutiveHits += 1
+
+        if (this.consecutiveHits in MULTIPLIER_THRESHOLD) {
+            this.incrementMultiplier()
+        }
+    }
+
+    private incrementMultiplier() {
+        this.multiplier = MULTIPLIER_THRESHOLD[this.consecutiveHits]
         this.multiplierText.setText(`x${this.multiplier}`)
     }
 
@@ -114,5 +143,17 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         }
 
         return 0
+    }
+
+    public onScoreChange(callback: (score: number, consecutiveHits: number, multiplier: number) => void) {
+        this.scoreEvent.on('scoreChange', callback)
+    }
+
+    public offScoreChange(callback: (score: number, consecutiveHits: number, multiplier: number) => void) {
+        this.scoreEvent.off('scoreChange', callback)
+    }
+
+    private emitScoreChange() {
+        this.scoreEvent.emit('scoreChange', this.score, this.consecutiveHits, this.multiplier)
     }
 }

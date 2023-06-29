@@ -1,5 +1,10 @@
+import GameplayStateMachine, { PlayingAcceleratedState, PlayingState, StaticState } from '../gameplay-state/GameplayState'
 import Player from '../player/Player'
+import ScoreManager from '../score/ScoreManager'
 import Platform from './Platform'
+
+const BOUNCE_VELOCITY = 800
+
 
 export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private config: PlatformSpawnerConfig
@@ -11,18 +16,26 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private despawnArea: Phaser.GameObjects.Rectangle
 
     private mainCamera: Phaser.Cameras.Scene2D.Camera
+    private gameState: GameplayStateMachine
+    private scoreManager: ScoreManager
+
+    private colorMap: PlatformColors
+    private shadowColor: number
 
     constructor(
         world: Phaser.Physics.Arcade.World,
         scene: Phaser.Scene,
         player: Player,
-        config: PlatformSpawnerConfig
+        config: PlatformSpawnerConfig,
+        gameState: GameplayStateMachine,
+        colorMap: PlatformColors,
+        scoreManager: ScoreManager
     ) {
         super(world, scene, {
             classType: Platform,
             createCallback: (gameObject: Phaser.GameObjects.GameObject) => {
                 if (gameObject instanceof Platform) {
-                    gameObject.sleep()
+                    this.deactivatePlatform(gameObject, true, true)
                 }
             },
             maxSize: 5,
@@ -33,16 +46,41 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             this,
             player,
             (
-                _player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-                platform: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+                collidedPlayer: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+                colliderPlatform: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
             ) => {
-                if (platform instanceof Platform) {
-                    platform.onCollideWithPlayer()
-                } else {
+                if (!(collidedPlayer instanceof Player)) {
+                    throw new Error('player is not a Player')
+                }
+
+                if (!(colliderPlatform instanceof Platform)) {
                     throw new Error('platform is not a Platform')
                 }
-            }
+
+                // if static state, set playing state
+                if (gameState.getState() instanceof StaticState) {
+                    gameState.changeState(new PlayingState())
+                }
+
+                
+                // if it is an accurate hit, add chainable score
+                const { isAccurate } = colliderPlatform.applyCollision(player, this.config.requiredAcc)
+                this.scoreManager.tryAddScore(isAccurate)
+
+                // apply force onto player
+                this.bouncePlayer(player)
+
+                // apply collision
+                this.applyHit(isAccurate)
+            },
+            undefined,
+            this
         )
+
+        // update the platform state when the game state changes
+        gameState.onStateChange(() => {
+            this.updatePlatformStates()
+        })
 
         this.config = config
 
@@ -53,6 +91,12 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         this.spawnArea = this.createSpawnArea(config)
         this.bufferArea = this.createBufferArea(config)
         this.despawnArea = this.createDespawnArea(config)
+
+        this.gameState = gameState
+        this.scoreManager = scoreManager
+
+        this.shadowColor = gameState.getNextPlatformShadowColor()
+        this.colorMap = colorMap
     }
 
     update() {
@@ -70,7 +114,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             bufferHeight
         )
         if (!bodies.some((body) => body.gameObject instanceof Platform)) {
-            this.createPlatform()
+            this.spawnPlatform()
         }
 
         // if there is a platform in the despawn area, despawn it
@@ -87,9 +131,82 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             despawnHeight
         )
         bodiesToDespawn.forEach((body) => {
-            if (body.gameObject instanceof Platform) {
-                body.gameObject.sleep()
+            if (body.gameObject instanceof Platform && body.gameObject.active) {
+                this.deactivatePlatform(body.gameObject, true, true)
             }
+        })
+    }
+
+    private bouncePlayer(player: Player): void {
+        player.setIgnoreInput(true)
+
+        // wait for some time before allowing the player to move again
+        this.scene.time.delayedCall(200, () => {
+            player.setIgnoreInput(false)
+        })
+
+        // bounce the player
+        const body = player.body as Phaser.Physics.Arcade.Body
+
+        if (!body) {
+            throw new Error('player body is undefined')
+        }
+
+        body.setVelocityY(-BOUNCE_VELOCITY)
+    }
+
+    private applyHit(isAccurate: boolean) {
+        let changed = false
+
+        if (isAccurate) {
+            changed = this.applyAccurateHit()
+        } else {
+            changed = this.applyInaccurateHit()
+        }
+
+        // If game state had changed. 
+        // This would've been called automatically.
+        if (!changed) {
+            this.updatePlatformStates()
+        }
+    }
+
+    private updatePlatformStates() {
+        const velocity = this.gameState.getState().getPlatformVelocity()
+        this.shadowColor = this.gameState.getState().getNextPlatformShadowColor()
+
+        this.setAllPlatform(velocity, this.shadowColor)
+    }
+
+    private applyInaccurateHit() {
+        let changed = false
+        if (this.gameState.getState() instanceof PlayingAcceleratedState) {
+            this.gameState.changeState(new PlayingState())
+            changed = true
+        }
+
+        return changed
+    }
+
+    private applyAccurateHit() {
+        let changed = false
+        if (this.gameState.getState() instanceof PlayingState) {
+            this.gameState.changeState(new PlayingAcceleratedState(this.colorMap))
+            changed = true
+        }
+
+        return changed
+    }
+
+    private setAllPlatform(velocity: number, color: number) {
+        // update child platforms' shadow color and velocity
+        this.getChildren().forEach(child => {
+            if (!(child instanceof Platform)) {
+                throw new Error('child is not a Platform')
+            }
+
+            // update shadow color
+            this.setPlatform(child, velocity, color)
         })
     }
 
@@ -104,7 +221,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             spawnWidth,
             this.mainCamera.height,
             0x0000ff,
-            0
+            0.2
         )
     }
 
@@ -119,26 +236,31 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             bufferWidth,
             this.mainCamera.height,
             0xff0000,
-            0
+            0.5
         )
     }
 
     private createDespawnArea(config: PlatformSpawnerConfig): Phaser.GameObjects.Rectangle {
         // add rectangle collider to the world, offset by the camera's width
         const despawnWidth = config.maxGap
-        const despawnX = -despawnWidth / 2 - config.minGap
+        const despawnX = -despawnWidth / 2 - config.minGap - 100
         const despawnY = this.mainCamera.height / 2
         return this.scene.add.rectangle(
             despawnX,
             despawnY,
             despawnWidth,
             this.mainCamera.height,
-            0x000000,
+            0xff0000,
             0
         )
     }
 
-    private createPlatform(): Platform | null {
+    public prespawnPlatform(): void {
+        // prespawn platforms
+        this.spawnPlatform(this.mainCamera.width / 2, this.mainCamera.height / 3 * 2)
+    }
+
+    private spawnPlatform(x?: number, y?: number): Platform | null {
         if (!this.config) {
             throw new Error('config is not defined')
         }
@@ -152,27 +274,52 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
         const { left: spawnLeft, width: spawnWidth } = this.spawnArea.getBounds()
 
-        const spawnX = Math.random() * spawnWidth + spawnLeft
-        const spawnY =
-            Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
+        const spawnX = x ?? Math.random() * spawnWidth + spawnLeft
+        const spawnY = y ?? Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
 
-        platform.awake(
-            spawnX,
-            spawnY,
-            {
-                width:
-                    Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) +
-                    this.config.minPlatformWidth,
-                height:
-                    Math.random() *
-                        (this.config.maxPlatformHeight - this.config.minPlatformHeight) +
-                    this.config.minPlatformHeight,
-                extraWidth: 0,
-                requiredAcc: 0.6,
-            },
-            this.player
-        )
+        const width = Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) + this.config.minPlatformWidth
+        const height = Math.random() * (this.config.maxPlatformHeight - this.config.minPlatformHeight) + this.config.minPlatformHeight
+
+        platform.resetConfig({
+            width,
+            height,
+            extraWidth: 0,
+            requiredAcc: this.config.requiredAcc,
+        })
+
+        // set the platform to be active and awake
+        this.activatePlatform(platform, true, spawnX, spawnY, true, true)
 
         return platform
+    }
+
+    private setPlatform(platform: Platform, velocity: number, color: number) {
+        // set the platform's shadow color and velocity
+        platform.setVelocityX(velocity)
+
+        // set the platform's shadow color
+        platform.setShadowColor(color)
+    }
+
+    private activatePlatform(platform: Platform, reset?: boolean, x?: number, y?: number, enableGameObject?: boolean, showGameObject?: boolean) {
+        platform.enableBody(reset, x, y, enableGameObject, showGameObject)
+
+        const body = platform.body as Phaser.Physics.Arcade.Body
+
+        if (body) {
+            body.setAllowGravity(false)
+            body.setImmovable(true)
+            body.pushable = false
+        } else {
+            throw new Error('body is undefined')
+        }
+
+        const velocity = this.gameState.getPlatformVelocity()
+
+        this.setPlatform(platform, velocity, this.shadowColor)
+    }
+
+    private deactivatePlatform(platform: Platform, disableGameObject?: boolean, hideGameObject?: boolean) {
+        platform.disableBody(disableGameObject, hideGameObject)
     }
 }

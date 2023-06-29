@@ -7,6 +7,7 @@ type PlatformSpawnerConfig = {
     maxPlatformHeight: number
     minPlatformWidth: number
     maxPlatformWidth: number
+    requiredAcc: number
 }
 
 type PlatformConfig = {

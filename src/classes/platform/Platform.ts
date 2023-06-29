@@ -14,14 +14,12 @@ type PlatformOverlayConfig = {
 
 export default class Platform extends Phaser.Physics.Arcade.Sprite {
     private platformConfig: PlatformConfig | undefined
+    private shadowColor: number
 
     private mPlatform: PlatformOverlayConfig
     private lPlatform: PlatformOverlayConfig
     private rPlatform: PlatformOverlayConfig
 
-    private requiredAccuracy: number | undefined
-
-    private player: Player | undefined
     private graphics: Phaser.GameObjects.Graphics
     private mainCamera: Phaser.Cameras.Scene2D.Camera
 
@@ -56,11 +54,11 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
             alpha: 1,
         }
 
-        this.requiredAccuracy = undefined
-
-        this.player = undefined
         this.graphics = scene.add.graphics()
         this.mainCamera = scene.cameras.main
+        this.shadowColor = 0x000000
+
+        this.setAlpha(0)
     }
 
     preUpdate(time: number, delta: number): void {
@@ -83,6 +81,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
 
     /**
      * Reset the platform to its initial state
+     * @deprecated handle this in the spawner
      * @param x The x coordinate (in world space) to position the Game Object at.
      * @param y The y coordinate (in world space) to position the Game Object at.
      * @param platformConfig Configurations for the platform
@@ -92,7 +91,6 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         x: number,
         y: number,
         platformConfig: PlatformConfig,
-        collisionTarget: Player
     ): void {
         this.enableBody(true, x, y, true, true)
 
@@ -104,28 +102,32 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         this.lPlatform.color = 0x666666
         this.rPlatform.color = 0x666666
 
-        const body = this.body as Phaser.Physics.Arcade.Body
-
-        if (body) {
-            body.setAllowGravity(false)
-            body.setImmovable(true)
-            body.pushable = false
-        } else {
-            throw new Error('body is undefined')
-        }
-
         this.platformConfig = platformConfig
-        this.requiredAccuracy = platformConfig.requiredAcc
-        this.player = collisionTarget
-
-        this.travelLeft()
+        this.platformConfig.requiredAcc = platformConfig.requiredAcc
     }
 
     /**
      * Disable the platform's body
+     * @deprecated Handle this in the spawner instead
      */
     public sleep() {
         this.disableBody(true, true)
+    }
+
+    private resetOverlayColors() {
+        this.mPlatform.color = 0x666666
+        this.lPlatform.color = 0x666666
+        this.rPlatform.color = 0x666666
+    }
+
+    public resetConfig(platformConfig: PlatformConfig): void {
+        const colliderSizeOffsetX = 2
+        const colliderSizeOffsetY = 50
+
+        this.setDisplaySize(platformConfig.width + colliderSizeOffsetX, platformConfig.height + colliderSizeOffsetY)
+        this.setOffset(0, colliderSizeOffsetY / 3)
+        this.resetOverlayColors()
+        this.platformConfig = platformConfig
     }
 
     private drawOverlay(config: PlatformOverlayConfig): void {
@@ -144,7 +146,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         // draw gradient shadow
         this.graphics.clear()
         this.graphics.setDepth(this.depth + 1)
-        this.graphics.fillGradientStyle(0x000000, 0x000000, 0xffffff, 0xffffff, 0.05)
+        this.graphics.fillGradientStyle(this.shadowColor, this.shadowColor, 0xffffff, 0xffffff, 0.8, 0.8, 0, 0)
         this.graphics.fillRect(
             this.lPlatform.position.x - this.lPlatform.size.x / 2,
             this.mPlatform.position.y + this.mPlatform.size.y / 2,
@@ -170,22 +172,10 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         this.rPlatform.size.set(extraWidth, config.height)
     }
 
-    private travelLeft() {
-        if (this.active) {
-            this.setVelocityX(-450)
-        } else {
-            throw new Error('platform is inactive')
-        }
-    }
-
-    private bouncePlayer(): void {
-        if (this.player === undefined) {
-            throw new Error('player is undefined')
-        }
-
-        const player = this.player
-
-        // ignore collision
+    /**
+     * @deprecated Restructure to use `applyCollision` instead
+     */
+    private bouncePlayer(player: Player): void {
         player.setIgnoreInput(true)
 
         // wait for some time before allowing the player to move again
@@ -212,20 +202,20 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    public onCollideWithPlayer(): void {
-        if (this.player === undefined) {
-            throw new Error('player is undefined')
+    public applyCollision(player: Player, accuracy: number): {
+        isAccurate: boolean,
+    } {
+        if (!this.platformConfig) {
+            throw new Error('platformConfig is undefined')
         }
 
-        if (this.requiredAccuracy === undefined) {
-            throw new Error('required accuracy is undefined')
-        }
+        this.platformConfig.requiredAcc = accuracy
 
         // checks if any of the player's extent fall within the main platform's extent
-        const playerWidth = this.player.width
+        const playerWidth = player.width
 
-        let playerExtentL = this.player.getLeftCenter().x
-        let playerExtentR = this.player.getRightCenter().x
+        let playerExtentL = player.getLeftCenter().x
+        let playerExtentR = player.getRightCenter().x
 
         const platformExtentL = this.mPlatform.position.x - this.mPlatform.size.x / 2
         const platformExtentR = this.mPlatform.position.x + this.mPlatform.size.x / 2
@@ -235,28 +225,90 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         }
 
         // apply accuracy offset
-        playerExtentL += playerWidth * this.requiredAccuracy
-        playerExtentR -= playerWidth * this.requiredAccuracy
+        playerExtentL += playerWidth * this.platformConfig.requiredAcc
+        playerExtentR -= playerWidth * this.platformConfig.requiredAcc
 
-        const isAccurate =
+        const isInaccurate =
+            (playerExtentL <= platformExtentL && playerExtentR <= platformExtentL) ||
+            (playerExtentL >= platformExtentR && playerExtentR >= platformExtentR)
+
+        const isLeft = playerExtentL <= platformExtentL && playerExtentR <= platformExtentL
+
+        // change platform color
+        if (isInaccurate) {
+            this.onInaccurateCollision(isLeft)
+
+            // reset multiplier
+            // player.getScoreManager().resetMultiplier()
+
+            // add score but don't count towards multiplier
+            // player.getScoreManager().tryAddScore(false)
+        } else {
+            this.onAccurateCollision()
+
+            // add score
+            // player.getScoreManager().tryAddScore(true)
+        }
+
+        // bounce player
+        // this.bouncePlayer(player)
+    
+        return {
+            isAccurate: !isInaccurate,
+        }
+    }
+
+    /**
+     * @deprecated use applyCollision instead
+     */
+    public onCollideWithPlayer(player: Player): void {
+        if (this.platformConfig?.requiredAcc === undefined) {
+            throw new Error('required accuracy is undefined')
+        }
+
+        // checks if any of the player's extent fall within the main platform's extent
+        const playerWidth = player.width
+
+        let playerExtentL = player.getLeftCenter().x
+        let playerExtentR = player.getRightCenter().x
+
+        const platformExtentL = this.mPlatform.position.x - this.mPlatform.size.x / 2
+        const platformExtentR = this.mPlatform.position.x + this.mPlatform.size.x / 2
+
+        if (playerExtentL === undefined || playerExtentR === undefined) {
+            throw new Error('undefined extents')
+        }
+
+        // apply accuracy offset
+        playerExtentL += playerWidth * this.platformConfig.requiredAcc
+        playerExtentR -= playerWidth * this.platformConfig.requiredAcc
+
+        const isInaccurate =
             (playerExtentL <= platformExtentL && playerExtentR <= platformExtentL) ||
             (playerExtentL >= platformExtentR && playerExtentR >= platformExtentR)
         const isLeft = playerExtentL <= platformExtentL && playerExtentR <= platformExtentL
 
         // change platform color
-        if (isAccurate) {
+        if (isInaccurate) {
             this.onInaccurateCollision(isLeft)
 
             // reset multiplier
-            this.player.getScoreManager().resetMultiplier()
+            player.getScoreManager().resetMultiplier()
+
+            // add score but don't count towards multiplier
+            player.getScoreManager().tryAddScore(false)
         } else {
             this.onAccurateCollision()
+
+            // add score
+            player.getScoreManager().tryAddScore(true)
         }
 
         // bounce player
-        this.bouncePlayer()
+        this.bouncePlayer(player)
+    }
 
-        // add score
-        this.player.getScoreManager().addScore()
+    public setShadowColor(color: number): void {
+        this.shadowColor = color
     }
 }
