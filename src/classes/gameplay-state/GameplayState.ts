@@ -71,6 +71,20 @@ export class PlayingState implements GameplayState {
     }
 }
 
+export class GameOverState implements GameplayState {
+    getPlayerAcceleration(): number {
+        return 0
+    }
+
+    getPlatformVelocity(): number {
+        return 0
+    }
+
+    getNextPlatformShadowColor(): number {
+        return 0xeeeeee
+    }
+}
+
 export default class GameplayStateMachine implements GameplayContext {
     private state: GameplayState
     private eventListeners: ((state: GameplayState) => void)[]

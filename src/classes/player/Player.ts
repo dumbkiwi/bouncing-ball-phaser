@@ -1,5 +1,5 @@
 import Vector2 = Phaser.Math.Vector2
-import GameplayStateMachine from '../gameplay-state/GameplayState'
+import GameplayStateMachine, { GameOverState } from '../gameplay-state/GameplayState'
 import ScoreManager from '../score/ScoreManager'
 
 export default class Player extends Phaser.Physics.Arcade.Image {
@@ -10,6 +10,10 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
     private scoreManager: ScoreManager
     private gameState: GameplayStateMachine
+
+    private emitter: Phaser.GameObjects.Particles.ParticleEmitter
+    private deathEmitterFlow: Phaser.GameObjects.Particles.ParticleEmitter
+    private deathEmitterExpl: Phaser.GameObjects.Particles.ParticleEmitter
 
     constructor(
         scene: Phaser.Scene,
@@ -52,11 +56,65 @@ export default class Player extends Phaser.Physics.Arcade.Image {
             this.onStateChange(state)
         })
 
+        const emitter = this.createEmitter()
+        const deathEmitter = this.createDeathEmitterFlow()
+        const deathEmitterExpl = this.createDeathEmitterExpl()
+
         this.acceleration = new Vector2(0, 0)
         this.scoreManager = scoreManager
         this.gameState = gameState
         
         this.preparePlayer()
+
+        this.emitter = emitter
+        this.deathEmitterFlow = deathEmitter
+        this.deathEmitterExpl = deathEmitterExpl
+    }
+
+    private createEmitter(): Phaser.GameObjects.Particles.ParticleEmitter {
+        return this.scene.add.particles(0, 0, 'square', {
+            lifespan: 800,
+            speedY: { min: -200, max: 50 },
+            speedX: { min: -500, max: -200 },
+            scale: { start: 0.1, end: 0 },
+            color: [0x333333],
+            gravityY: 0,
+            accelerationX: -800,
+            particleBringToTop: false,
+            emitting: false
+        })
+    }
+
+    private createDeathEmitterFlow(): Phaser.GameObjects.Particles.ParticleEmitter {
+        // flow type 
+        return this.scene.add.particles(this.scene.cameras.main.centerX, this.scene.cameras.main.height, 'square', {
+            lifespan: 3000,
+            x: {min: -80, max: 80},
+            speedY: { min: -200, max: 100 },
+            speedX: { min: -50, max: 50 },
+            scale: { start: 0.1, end: 0 },
+            color: [0xee4444],
+            gravityY: -300,
+            particleBringToTop: false,
+            emitting: false
+        })
+    }
+
+    private createDeathEmitterExpl(): Phaser.GameObjects.Particles.ParticleEmitter {
+        // explosion type
+        return this.scene.add.particles(0, 0, 'square', {
+            lifespan: 2000,
+            x: {min: -80, max: 80},
+            y: {min: -400, max: 0},
+            speedY: { min: -200, max: 200 },
+            speedX: { min: -500, max: 500 },
+            accelerationX: { min: -200, max: 200 },
+            scale: { start: 0.1, end: 0 },
+            color: [0xee4444],
+            gravityY: -200,
+            particleBringToTop: false,
+            emitting: false
+        })
     }
 
     private preparePlayer() {
@@ -64,6 +122,11 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         this.setCollideWorldBounds(true)
         this.setImmovable(true)
 
+        this.scene.physics.world.on('worldbounds', (body: Phaser.Physics.Arcade.Body) => {
+            if (body.gameObject === this) {
+                this.applyGameOver()
+            }
+        })
 
         this.onStateChange(this.gameState.getState())
 
@@ -74,11 +137,10 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         }
 
         body.setAllowGravity(false)
+        body.onWorldBounds = true
     }
 
     private onStateChange(state: GameplayState) {
-        
-
         this.acceleration.set(0, state.getPlayerAcceleration())
     }
 
@@ -86,6 +148,39 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         if (!this.ignoreInput && this.pointerDown) {
             this.body?.velocity.add(this.acceleration)
         }
+    }
+
+    public applyGameOver(): void {
+        this.gameState.changeState(new GameOverState())
+
+        this.emitDeathParticles()
+
+        const body = this.body as Phaser.Physics.Arcade.Body
+
+        if (!body) {
+            throw new Error('Ball body is null')
+        }
+
+        body.setAllowGravity(false)
+        body.setVelocity(0, 0)
+        body.setAcceleration(0, 0)
+
+        this.disableBody(false, false)
+
+        this.scene.tweens.add({
+            targets: this,
+            duration: 100,
+            alpha: 0,
+        })
+    }
+
+    private emitDeathParticles(): void {
+        this.deathEmitterFlow.start()
+        this.deathEmitterExpl.emitParticleAt(this.x, this.y + this.height, 100)
+    }
+
+    public emitParticles(): void {
+        this.emitter.emitParticleAt(this.x, this.y + this.height / 1.3, Math.random() * 10)
     }
 
     public setIgnoreInput(ignore = true): void {

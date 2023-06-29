@@ -4,6 +4,7 @@ import ScoreManager from '@/classes/score/ScoreManager'
 import Phaser from 'phaser'
 import { SceneKeys } from '../SceneController'
 import GameplayStateMachine, { StaticState } from '@/classes/gameplay-state/GameplayState'
+import GameplayUI from '../overlays/GameplayUI'
 
 const COLOR_MAP: PlatformColors = [
     [0xABD6F2, 0x96CBEF, 0x81C1EB, 0x6CB6E8, 0x57ACE5],
@@ -21,9 +22,12 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
 
     private gameState!: GameplayStateMachine
 
+    private scoreManager!: ScoreManager
+
     preload() {
         this.load.image('player', 'assets/bouncing-ball/1x/pearl_light.png')
         this.load.svg('platform', 'assets/shapes/square.svg')
+        this.load.svg('square', 'assets/shapes/square.svg')
 
         this.gameState = new GameplayStateMachine(new StaticState())
     }
@@ -59,6 +63,8 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
 
         // prespawn platforms
         this.spawner.prespawnPlatform()
+
+        this.scoreManager = scoreManager
     }
 
     update() {
@@ -70,8 +76,14 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
             this.scene.launch(SceneKeys.GameUI)
             this.scene.moveBelow(SceneKeys.GameUI)
 
-            this.game.scene.getScene(SceneKeys.GameUI).load.on('complete', () => {
+            const scene = this.game.scene.getScene(SceneKeys.GameUI) as GameplayUI
+            
+            scene.load.once('complete', () => {
                 resolve()
+            })
+
+            scene.events.once('create', () => {
+                scene.attachGameplay(this)
             })
         })
     }
@@ -79,5 +91,16 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     removeOverlay(): void {
         this.scene.sleep(SceneKeys.GameUI)
         this.scene.setVisible(false, SceneKeys.GameUI)
+
+        const scene = this.game.scene.getScene(SceneKeys.GameUI) as GameplayUI
+        scene.detachGameplay()
+    }
+
+    public getGameState(): GameplayStateMachine {
+        return this.gameState
+    }
+
+    public getScoreManager(): ScoreManager {
+        return this.scoreManager
     }
 }

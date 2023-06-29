@@ -1,5 +1,5 @@
 import Loading from './overlays/Loading'
-import UI from './overlays/GamePlayUI'
+import UI from './overlays/GameplayUI'
 import MainMenu from './menu-scenes/MainMenu'
 import Gameplay from './gameplay-scenes/Gameplay'
 import Skins from './menu-scenes/Skins'
@@ -100,6 +100,38 @@ export default class SceneController extends Phaser.Scene {
                     sleep: true,
                     allowInput: false,
                     moveBelow: true,
+                })
+            })
+        })
+    }
+
+    public reloadScene(from: SceneKeys) {
+        // show loading screen
+        // wait for the other screen to finish preloading
+        // transition to the other screen
+        const loadingScene = this.game.scene.getScene(SceneKeys.Loading) as SceneWithTransition
+
+        if (this.scene.key === SceneKeys.Loading) {
+            console.warn('Already in loading screen')
+            return
+        }
+
+        if (from === SceneKeys.Loading) {
+            console.warn('Cannot transition from loading screen')
+            return
+        }
+
+        this.scene.bringToTop(SceneKeys.Loading)
+        loadingScene.transitionIn().then(() => {
+            // restart current scene
+            const currentScene = this.game.scene.getScene(from) as SceneWithOverlay
+            currentScene.removeOverlay()
+
+            currentScene.scene.restart()
+
+            currentScene.load.once('complete', () => {
+                currentScene.createOverlay().then(() => {
+                    loadingScene.transitionOut()
                 })
             })
         })

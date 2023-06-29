@@ -70,6 +70,9 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 // apply force onto player
                 this.bouncePlayer(player)
 
+                // create particle
+                this.player.emitParticles()
+
                 // apply collision
                 this.applyHit(isAccurate)
             },
