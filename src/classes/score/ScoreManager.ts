@@ -147,11 +147,15 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         return 0
     }
 
-    public onScoreChange(callback: (score: number, consecutiveHits: number, multiplier: number) => void) {
+    public onScoreChange(
+        callback: (score: number, consecutiveHits: number, multiplier: number) => void
+    ) {
         this.scoreEvent.on('scoreChange', callback)
     }
 
-    public offScoreChange(callback: (score: number, consecutiveHits: number, multiplier: number) => void) {
+    public offScoreChange(
+        callback: (score: number, consecutiveHits: number, multiplier: number) => void
+    ) {
         this.scoreEvent.off('scoreChange', callback)
     }
 

@@ -21,21 +21,22 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         y: number,
         texture: string,
         scoreManager: ScoreManager,
-        gameState: GameplayStateMachine,
+        gameState: GameplayStateMachine
     ) {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
 
         // add touch interaction
-        this.scene.add.rectangle(
-            0,
-            0,
-            this.scene.cameras.main.width,
-            this.scene.cameras.main.height,
-            0xff0000,
-            0
-        )
+        this.scene.add
+            .rectangle(
+                0,
+                0,
+                this.scene.cameras.main.width,
+                this.scene.cameras.main.height,
+                0xff0000,
+                0
+            )
             .setOrigin(0, 0)
             .setInteractive()
             .on('pointerdown', () => {
@@ -63,7 +64,7 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         this.acceleration = new Vector2(0, 0)
         this.scoreManager = scoreManager
         this.gameState = gameState
-        
+
         this.preparePlayer()
 
         this.emitter = emitter
@@ -81,31 +82,36 @@ export default class Player extends Phaser.Physics.Arcade.Image {
             gravityY: 0,
             accelerationX: -800,
             particleBringToTop: false,
-            emitting: false
+            emitting: false,
         })
     }
 
     private createDeathEmitterFlow(): Phaser.GameObjects.Particles.ParticleEmitter {
-        // flow type 
-        return this.scene.add.particles(this.scene.cameras.main.centerX, this.scene.cameras.main.height, 'square', {
-            lifespan: 3000,
-            x: {min: -80, max: 80},
-            speedY: { min: -200, max: 100 },
-            speedX: { min: -50, max: 50 },
-            scale: { start: 0.1, end: 0 },
-            color: [0xee4444],
-            gravityY: -300,
-            particleBringToTop: false,
-            emitting: false
-        })
+        // flow type
+        return this.scene.add.particles(
+            this.scene.cameras.main.centerX,
+            this.scene.cameras.main.height,
+            'square',
+            {
+                lifespan: 3000,
+                x: { min: -80, max: 80 },
+                speedY: { min: -200, max: 100 },
+                speedX: { min: -50, max: 50 },
+                scale: { start: 0.1, end: 0 },
+                color: [0xee4444],
+                gravityY: -300,
+                particleBringToTop: false,
+                emitting: false,
+            }
+        )
     }
 
     private createDeathEmitterExpl(): Phaser.GameObjects.Particles.ParticleEmitter {
         // explosion type
         return this.scene.add.particles(0, 0, 'square', {
             lifespan: 2000,
-            x: {min: -80, max: 80},
-            y: {min: -400, max: 0},
+            x: { min: -80, max: 80 },
+            y: { min: -400, max: 0 },
             speedY: { min: -200, max: 200 },
             speedX: { min: -500, max: 500 },
             accelerationX: { min: -200, max: 200 },
@@ -113,7 +119,7 @@ export default class Player extends Phaser.Physics.Arcade.Image {
             color: [0xee4444],
             gravityY: -200,
             particleBringToTop: false,
-            emitting: false
+            emitting: false,
         })
     }
 

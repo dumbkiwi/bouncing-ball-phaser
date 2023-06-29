@@ -87,11 +87,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
      * @param platformConfig Configurations for the platform
      * @param collisionTarget The player object that will collide with this platform
      */
-    public awake(
-        x: number,
-        y: number,
-        platformConfig: PlatformConfig,
-    ): void {
+    public awake(x: number, y: number, platformConfig: PlatformConfig): void {
         this.enableBody(true, x, y, true, true)
 
         this.setPosition(x, y)
@@ -124,7 +120,10 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         const colliderSizeOffsetX = 2
         const colliderSizeOffsetY = 50
 
-        this.setDisplaySize(platformConfig.width + colliderSizeOffsetX, platformConfig.height + colliderSizeOffsetY)
+        this.setDisplaySize(
+            platformConfig.width + colliderSizeOffsetX,
+            platformConfig.height + colliderSizeOffsetY
+        )
         this.setOffset(0, colliderSizeOffsetY / 3)
         this.resetOverlayColors()
         this.platformConfig = platformConfig
@@ -146,7 +145,16 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         // draw gradient shadow
         this.graphics.clear()
         this.graphics.setDepth(this.depth + 1)
-        this.graphics.fillGradientStyle(this.shadowColor, this.shadowColor, 0xffffff, 0xffffff, 0.8, 0.8, 0, 0)
+        this.graphics.fillGradientStyle(
+            this.shadowColor,
+            this.shadowColor,
+            0xffffff,
+            0xffffff,
+            0.8,
+            0.8,
+            0,
+            0
+        )
         this.graphics.fillRect(
             this.lPlatform.position.x - this.lPlatform.size.x / 2,
             this.mPlatform.position.y + this.mPlatform.size.y / 2,
@@ -202,8 +210,11 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    public applyCollision(player: Player, accuracy: number): {
-        isAccurate: boolean,
+    public applyCollision(
+        player: Player,
+        accuracy: number
+    ): {
+        isAccurate: boolean
     } {
         if (!this.platformConfig) {
             throw new Error('platformConfig is undefined')
@@ -252,7 +263,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
 
         // bounce player
         // this.bouncePlayer(player)
-    
+
         return {
             isAccurate: !isInaccurate,
         }

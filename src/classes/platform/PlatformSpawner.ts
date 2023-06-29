@@ -1,10 +1,13 @@
-import GameplayStateMachine, { PlayingAcceleratedState, PlayingState, StaticState } from '../gameplay-state/GameplayState'
+import GameplayStateMachine, {
+    PlayingAcceleratedState,
+    PlayingState,
+    StaticState,
+} from '../gameplay-state/GameplayState'
 import Player from '../player/Player'
 import ScoreManager from '../score/ScoreManager'
 import Platform from './Platform'
 
 const BOUNCE_VELOCITY = 800
-
 
 export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private config: PlatformSpawnerConfig
@@ -46,8 +49,12 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             this,
             player,
             (
-                collidedPlayer: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-                colliderPlatform: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+                collidedPlayer:
+                    | Phaser.Types.Physics.Arcade.GameObjectWithBody
+                    | Phaser.Tilemaps.Tile,
+                colliderPlatform:
+                    | Phaser.Types.Physics.Arcade.GameObjectWithBody
+                    | Phaser.Tilemaps.Tile
             ) => {
                 if (!(collidedPlayer instanceof Player)) {
                     throw new Error('player is not a Player')
@@ -62,9 +69,11 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                     gameState.changeState(new PlayingState())
                 }
 
-                
                 // if it is an accurate hit, add chainable score
-                const { isAccurate } = colliderPlatform.applyCollision(player, this.config.requiredAcc)
+                const { isAccurate } = colliderPlatform.applyCollision(
+                    player,
+                    this.config.requiredAcc
+                )
                 this.scoreManager.tryAddScore(isAccurate)
 
                 // apply force onto player
@@ -167,7 +176,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             changed = this.applyInaccurateHit()
         }
 
-        // If game state had changed. 
+        // If game state had changed.
         // This would've been called automatically.
         if (!changed) {
             this.updatePlatformStates()
@@ -203,7 +212,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
     private setAllPlatform(velocity: number, color: number) {
         // update child platforms' shadow color and velocity
-        this.getChildren().forEach(child => {
+        this.getChildren().forEach((child) => {
             if (!(child instanceof Platform)) {
                 throw new Error('child is not a Platform')
             }
@@ -260,7 +269,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
     public prespawnPlatform(): void {
         // prespawn platforms
-        this.spawnPlatform(this.mainCamera.width / 2, this.mainCamera.height / 3 * 2)
+        this.spawnPlatform(this.mainCamera.width / 2, (this.mainCamera.height / 3) * 2)
     }
 
     private spawnPlatform(x?: number, y?: number): Platform | null {
@@ -278,10 +287,16 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         const { left: spawnLeft, width: spawnWidth } = this.spawnArea.getBounds()
 
         const spawnX = x ?? Math.random() * spawnWidth + spawnLeft
-        const spawnY = y ?? Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
+        const spawnY =
+            y ??
+            Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
 
-        const width = Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) + this.config.minPlatformWidth
-        const height = Math.random() * (this.config.maxPlatformHeight - this.config.minPlatformHeight) + this.config.minPlatformHeight
+        const width =
+            Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) +
+            this.config.minPlatformWidth
+        const height =
+            Math.random() * (this.config.maxPlatformHeight - this.config.minPlatformHeight) +
+            this.config.minPlatformHeight
 
         platform.resetConfig({
             width,
@@ -304,7 +319,14 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         platform.setShadowColor(color)
     }
 
-    private activatePlatform(platform: Platform, reset?: boolean, x?: number, y?: number, enableGameObject?: boolean, showGameObject?: boolean) {
+    private activatePlatform(
+        platform: Platform,
+        reset?: boolean,
+        x?: number,
+        y?: number,
+        enableGameObject?: boolean,
+        showGameObject?: boolean
+    ) {
         platform.enableBody(reset, x, y, enableGameObject, showGameObject)
 
         const body = platform.body as Phaser.Physics.Arcade.Body
@@ -322,7 +344,11 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         this.setPlatform(platform, velocity, this.shadowColor)
     }
 
-    private deactivatePlatform(platform: Platform, disableGameObject?: boolean, hideGameObject?: boolean) {
+    private deactivatePlatform(
+        platform: Platform,
+        disableGameObject?: boolean,
+        hideGameObject?: boolean
+    ) {
         platform.disableBody(disableGameObject, hideGameObject)
     }
 }

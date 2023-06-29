@@ -7,12 +7,12 @@ import GameplayStateMachine, { StaticState } from '@/classes/gameplay-state/Game
 import GameplayUI from '../overlays/GameplayUI'
 
 const COLOR_MAP: PlatformColors = [
-    [0xABD6F2, 0x96CBEF, 0x81C1EB, 0x6CB6E8, 0x57ACE5],
-    [0xABF2C9, 0x96EFBB, 0x81EBAD, 0x6CE8A0, 0x57E592],
-    [0xF2B5AB, 0xEFA396, 0xEB9181, 0xE87F6C, 0xE56C57],
-    [0xF1F2AB, 0xEDEF96, 0xEAEB81, 0xE6E86C, 0xE2E557],
-    [0xABACF2, 0x9698EF, 0x8183EB, 0x6C6EE8, 0x5759E5],
-    [0xF2ABE5, 0xEF96DE, 0xEB81D8, 0xE86CD1, 0xE557CB],
+    [0xabd6f2, 0x96cbef, 0x81c1eb, 0x6cb6e8, 0x57ace5],
+    [0xabf2c9, 0x96efbb, 0x81ebad, 0x6ce8a0, 0x57e592],
+    [0xf2b5ab, 0xefa396, 0xeb9181, 0xe87f6c, 0xe56c57],
+    [0xf1f2ab, 0xedef96, 0xeaeb81, 0xe6e86c, 0xe2e557],
+    [0xabacf2, 0x9698ef, 0x8183eb, 0x6c6ee8, 0x5759e5],
+    [0xf2abe5, 0xef96de, 0xeb81d8, 0xe86cd1, 0xe557cb],
 ]
 
 export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
@@ -38,21 +38,35 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
 
         const scoreManager = new ScoreManager(this, this.cameras.main.width / 2, 100)
 
-        const player = new Player(this, this.cameras.main.width / 2, 450, 'player', scoreManager, this.gameState)
+        const player = new Player(
+            this,
+            this.cameras.main.width / 2,
+            450,
+            'player',
+            scoreManager,
+            this.gameState
+        )
 
         // player.setVelocityY(-400)
 
-        this.spawner = new PlatformSpawner(this.physics.world, this, player, {
-            minGap: 200,
-            maxGap: 400,
-            minHeight: 800,
-            maxHeight: 1000,
-            minPlatformHeight: 20,
-            maxPlatformHeight: 20,
-            minPlatformWidth: 100,
-            maxPlatformWidth: 200,
-            requiredAcc: 0.6,
-        }, this.gameState, COLOR_MAP, scoreManager
+        this.spawner = new PlatformSpawner(
+            this.physics.world,
+            this,
+            player,
+            {
+                minGap: 200,
+                maxGap: 400,
+                minHeight: 800,
+                maxHeight: 1000,
+                minPlatformHeight: 20,
+                maxPlatformHeight: 20,
+                minPlatformWidth: 100,
+                maxPlatformWidth: 200,
+                requiredAcc: 0.6,
+            },
+            this.gameState,
+            COLOR_MAP,
+            scoreManager
         )
 
         this.add.existing(this.spawner)
@@ -77,7 +91,7 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
             this.scene.moveBelow(SceneKeys.GameUI)
 
             const scene = this.game.scene.getScene(SceneKeys.GameUI) as GameplayUI
-            
+
             scene.load.once('complete', () => {
                 resolve()
             })

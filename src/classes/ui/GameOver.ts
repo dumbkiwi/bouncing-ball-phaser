@@ -10,7 +10,6 @@ export default class GameOver extends Phaser.GameObjects.Container {
     private bestScoreText: Phaser.GameObjects.Text
     private coinText: Phaser.GameObjects.Text
 
-
     constructor(scene: Phaser.Scene, rexUI: RexUIPlugin) {
         super(scene, 0, 0)
 
@@ -46,7 +45,7 @@ export default class GameOver extends Phaser.GameObjects.Container {
                 fontFamily: 'Arial',
             }),
             0,
-            'center',
+            'center'
         )
 
         const scoreSizer = rexUI.add.sizer({
@@ -54,45 +53,35 @@ export default class GameOver extends Phaser.GameObjects.Container {
         })
 
         // top padding
-        scoreSizer.add(
-            scene.add.rectangle(0, 0, 0, 0, 0xffffff, 0),
-            1,
-            'center',
-        )
-        
+        scoreSizer.add(scene.add.rectangle(0, 0, 0, 0, 0xffffff, 0), 1, 'center')
+
         // score
-        this.scoreText = scene.add.text(0, 0, '0', {
-            fontSize: '72px',
-            color: '#666666',
-            fontFamily: 'Arial',
-        }).setOrigin(0.5)
-        
-        scoreSizer.add(
-            this.scoreText,
-            0,
-            'center',
-            {
-                top: 10,
-                bottom: 10,
-            }
-        )
+        this.scoreText = scene.add
+            .text(0, 0, '0', {
+                fontSize: '72px',
+                color: '#666666',
+                fontFamily: 'Arial',
+            })
+            .setOrigin(0.5)
+
+        scoreSizer.add(this.scoreText, 0, 'center', {
+            top: 10,
+            bottom: 10,
+        })
 
         // best score
-        this.bestScoreText = scene.add.text(0, 0, 'Best: 0', {
-            fontSize: '54px',
-            color: '#666666',
-            fontFamily: 'Arial',
-        }).setOrigin(0.5)
+        this.bestScoreText = scene.add
+            .text(0, 0, 'Best: 0', {
+                fontSize: '54px',
+                color: '#666666',
+                fontFamily: 'Arial',
+            })
+            .setOrigin(0.5)
 
-        scoreSizer.add(
-            this.bestScoreText,
-            0,
-            'center',
-            {
-                top: 10,
-                bottom: 10,
-            }
-        )
+        scoreSizer.add(this.bestScoreText, 0, 'center', {
+            top: 10,
+            bottom: 10,
+        })
 
         // coin
         this.coinText = scene.add.text(0, 0, '0', {
@@ -108,7 +97,9 @@ export default class GameOver extends Phaser.GameObjects.Container {
                     width: 200,
                     height: 80,
                     orientation: 'x',
-                    background: rexUI.add.roundRectangle(0, 0, 0, 0, 10).setStrokeStyle(1, 0x666666),
+                    background: rexUI.add
+                        .roundRectangle(0, 0, 0, 0, 10)
+                        .setStrokeStyle(1, 0x666666),
                     text: this.coinText,
                     icon: scene.add.image(0, 0, 'coin').setScale(2),
                     space: {
@@ -129,11 +120,7 @@ export default class GameOver extends Phaser.GameObjects.Container {
         )
 
         // bottom padding
-        scoreSizer.add(
-            scene.add.rectangle(0, 0, 0, 0, 0xffffff, 0),
-            1,
-            'center',
-        )
+        scoreSizer.add(scene.add.rectangle(0, 0, 0, 0, 0xffffff, 0), 1, 'center')
 
         scoreSizer.layout()
 

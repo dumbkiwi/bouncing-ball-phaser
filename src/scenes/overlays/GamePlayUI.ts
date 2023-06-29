@@ -104,7 +104,7 @@ export default class GameplayUI extends Phaser.Scene {
         }
 
         this.pauseButton.setVisible(false)
-        
+
         this.gameplayScene?.cameras.main.postFX.addPixelate(6)
         this.gameoverContainer.setVisible(true)
         this.tweens.add({
@@ -125,7 +125,7 @@ export default class GameplayUI extends Phaser.Scene {
         this.settingsContainer.setTargetScene(gameplay)
         this.gameplayScene = gameplay
 
-        this.gameStateCallbackId = gameplay.getGameState().onStateChange(state => {
+        this.gameStateCallbackId = gameplay.getGameState().onStateChange((state) => {
             if (state instanceof GameOverState) {
                 this.showGameOver()
             }
