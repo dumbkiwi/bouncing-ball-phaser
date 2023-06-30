@@ -21,12 +21,7 @@ export default abstract class Spike extends PlatformCondiment {
         this.scene.events.off('postupdate', this.followPlatform, this)
     }
 
-    public onCollisionWithPlayer(player: Player, isAccurateHit: boolean, _isLeftSide: boolean): void {
-        console.log(isAccurateHit)
-        if (!isAccurateHit) {
-            player.applyGameOver()
-        }
-    }
+    public abstract onCollisionWithPlayer(player: Player, isAccurateHit: boolean, isLeftSide: boolean): void
 
     private followPlatform(): void {
         if (this.platform) {

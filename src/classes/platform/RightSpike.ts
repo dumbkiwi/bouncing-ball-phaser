@@ -1,3 +1,4 @@
+import Player from "../player/Player"
 import Platform from "./Platform"
 import Spike from "./Spike"
 
@@ -8,4 +9,9 @@ export default class RightSpike extends Spike {
         this.setPosition(x, y)
     }
 
+    public onCollisionWithPlayer(player: Player, isAccurateHit: boolean, isLeftSide: boolean): void {
+        if (!isAccurateHit && !isLeftSide) {
+            player.applyGameOver()
+        }
+    }
 }
