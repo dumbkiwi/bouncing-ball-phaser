@@ -230,6 +230,8 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
             this.setAccurate()
         }
 
+        this.setVelocityY(200)
+
         return !isInaccurate
     }
 

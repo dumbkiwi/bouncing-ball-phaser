@@ -280,21 +280,21 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         // add rectangle collider to the world, offset by the camera's width
         const despawnWidth = config.maxGap
         const despawnX = -despawnWidth / 2 - config.minGap - 100
-        const despawnY = this.mainCamera.height / 2
+        const despawnY = 0
         return this.scene.add.rectangle(
             despawnX,
             despawnY,
             despawnWidth,
-            this.mainCamera.height,
+            this.mainCamera.height * 3,
             0xff0000,
             0
-        )
+        ).setOrigin(0.5, 0)
     }
 
     private updateDespawnArea(config: PlatformSpawnerConfig): void {
         const despawnWidth = config.maxGap
         const despawnX = -despawnWidth / 2 - config.minGap - 100
-        const despawnY = this.mainCamera.height / 2
+        const despawnY = 0
         this.despawnArea.setPosition(despawnX, despawnY)
         this.despawnArea.setSize(despawnWidth, this.mainCamera.height)
     }
