@@ -1,6 +1,6 @@
 export class StaticState implements GameplayState {
     getPlayerAcceleration(): number {
-        return 200
+        return 400
     }
 
     getPlatformVelocity(): number {
@@ -24,7 +24,7 @@ export class PlayingAcceleratedState implements GameplayState {
     }
 
     getPlayerAcceleration(): number {
-        return 200
+        return 400
     }
 
     getPlatformVelocity(): number {
@@ -59,7 +59,7 @@ export class PlayingAcceleratedState implements GameplayState {
 
 export class PlayingState implements GameplayState {
     getPlayerAcceleration(): number {
-        return 200
+        return 400
     }
 
     getPlatformVelocity(): number {

@@ -30,7 +30,7 @@ const GAME_CONFIG: Types.Core.GameConfig = {
         default: 'arcade',
         arcade: {
             // debug: true,
-            gravity: { y: 900 },
+            gravity: { y: 1000 },
         },
     },
     backgroundColor: '#ffffff',
