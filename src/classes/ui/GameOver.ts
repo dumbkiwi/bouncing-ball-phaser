@@ -101,7 +101,7 @@ export default class GameOver extends Phaser.GameObjects.Container {
                         .roundRectangle(0, 0, 0, 0, 10)
                         .setStrokeStyle(1, 0x666666),
                     text: this.coinText,
-                    icon: scene.add.image(0, 0, 'coin').setScale(2),
+                    icon: scene.add.image(0, 0, 'ui-coin').setScale(2),
                     space: {
                         icon: 10,
                         left: 15,
@@ -202,7 +202,7 @@ export default class GameOver extends Phaser.GameObjects.Container {
 
         this.setScore(scene.getScoreManager().getScore())
         this.setHighScore(scene.getScoreManager().getHighScore())
-        this.setCoin(0)
+        this.setCoin(scene.getScoreManager().getCoin())
 
         scene.getScoreManager().saveScore()
     }

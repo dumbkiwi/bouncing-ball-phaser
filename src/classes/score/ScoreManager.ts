@@ -19,6 +19,8 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
     private consecutiveHits: number
     private multiplier: number
 
+    private coin: number
+
     private highScoreText: Phaser.GameObjects.Text
     private scoreText: Phaser.GameObjects.Text
     private multiplierText: Phaser.GameObjects.Text
@@ -68,10 +70,14 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         this.add(score)
         this.add(multiplier)
 
+        const coin = this.loadCoin()
+
         this.score = 0
         this.highScore = highScore
         this.consecutiveHits = 0
         this.multiplier = 1
+
+        this.coin = coin
 
         this.highScoreText = highScoreText
         this.scoreText = score
@@ -145,6 +151,34 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         }
 
         return 0
+    }
+
+    public loadCoin() {
+        const item = localStorage.getItem('coin')
+
+        if (item) {
+            return parseInt(item)
+        }
+
+        return 0
+    }
+
+    public getCoin() {
+        return this.coin
+    }
+
+    public addCoin(increment = 1): number {
+        this.coin += increment
+        localStorage.setItem('coin', this.coin.toString())
+
+        return this.coin
+    }
+
+    public spendCoin(decrement = 1): number {
+        this.coin -= decrement
+        localStorage.setItem('coin', this.coin.toString())
+
+        return this.coin
     }
 
     public onScoreChange(

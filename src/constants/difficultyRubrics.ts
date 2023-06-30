@@ -1,5 +1,10 @@
 const DIFFICULTY_RUBRICS: DifficultyRubrics = {
     0: {
+        condimentPropability: {
+            "coin": 0.1,
+            "left-spike": 0,
+            "right-spike": 0,
+        },
         minGap: 400,
         maxGap: 400,
         minHeight: 900,
@@ -8,7 +13,7 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         maxPlatformHeight: 20,
         minPlatformWidth: 200,
         maxPlatformWidth: 200,
-        requiredAcc: 0.8,
+        requiredAcc: 0.6,
         platformColor: {
             baseColor: 0x666666,
             accurateColor: 0x88ff88,
@@ -16,6 +21,11 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         }
     },
     50: {
+        condimentPropability: {
+            "coin": 0.2,
+            "left-spike": 0.1,
+            "right-spike": 0,
+        },
         minGap: 200,
         maxGap: 500,
         minHeight: 800,
@@ -31,7 +41,12 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
             inaccurateColor: 0xffff00
         }
     },
-    75: {
+    80: {
+        condimentPropability: {
+            "coin": 0.2,
+            "left-spike": 0.2,
+            "right-spike": 0.1,
+        },
         minGap: 200,
         maxGap: 500,
         minHeight: 900,
@@ -48,6 +63,11 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         }
     },
     200: {
+        condimentPropability: {
+            "coin": 0.3,
+            "left-spike": 0.2,
+            "right-spike": 0.2,
+        },
         minGap: 300,
         maxGap: 600,
         minHeight: 600,
@@ -64,6 +84,11 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         }
     },
     300: {
+        condimentPropability: {
+            "coin": 0.4,
+            "left-spike": 0.3,
+            "right-spike": 0.3,
+        },
         minGap: 600,
         maxGap: 800,
         minHeight: 600,

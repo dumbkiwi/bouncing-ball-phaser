@@ -1,3 +1,4 @@
+import CONDIMENTS from '@/constants/condimentMap'
 import GameplayStateMachine, {
     PlayingAcceleratedState,
     PlayingState,
@@ -6,11 +7,15 @@ import GameplayStateMachine, {
 import Player from '../player/Player'
 import ScoreManager from '../score/ScoreManager'
 import Platform from './Platform'
+import PlatformCondiment from './PlatformCondiment'
 
-const BOUNCE_VELOCITY = 800
+const BOUNCE_VELOCITY = 1000
 
 export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private config: PlatformSpawnerConfig
+    private condimentGroup: {
+        [key in PlatformCondimentType]: Phaser.Physics.Arcade.Group
+    }
 
     private player: Player
 
@@ -70,10 +75,11 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 }
 
                 // if it is an accurate hit, add chainable score
-                const isAccurate = colliderPlatform.applyCollision(
+                const {isAccurate} = colliderPlatform.applyCollision(
                     player,
                     this.config.requiredAcc
                 )
+
                 this.scoreManager.tryAddScore(isAccurate)
 
                 // apply force onto player
@@ -88,6 +94,19 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             undefined,
             this
         )
+
+        // initialize condiment groups
+        this.condimentGroup = {} as {
+            [key in PlatformCondimentType]: Phaser.Physics.Arcade.Group
+        }
+
+        Object.keys(CONDIMENTS).forEach((condimentType) => {
+            const key = condimentType as PlatformCondimentType
+
+            this.condimentGroup[key] = this.createCondimentGroup(key)
+            
+            scene.add.existing(this.condimentGroup[key])
+        })
 
         // update the platform state when the game state changes
         gameState.onStateChange(() => {
@@ -154,6 +173,28 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             if (body.gameObject instanceof Platform && body.gameObject.active) {
                 this.deactivatePlatform(body.gameObject, true, true)
             }
+
+            if (
+                body.gameObject instanceof PlatformCondiment &&
+                body.gameObject.active
+            ) {
+                this.deactivateCondiment(body.gameObject, true, true)
+            }
+        })
+    }
+
+    private createCondimentGroup(
+        condimentType: PlatformCondimentType
+    ): Phaser.Physics.Arcade.Group {
+        return this.scene.physics.add.group({
+            classType: CONDIMENTS[condimentType],
+            createCallback: (gameObject: Phaser.GameObjects.GameObject) => {
+                if (gameObject instanceof PlatformCondiment) {
+                    this.deactivateCondiment(gameObject, true, true)
+                }
+            },
+            maxSize: 20,
+            runChildUpdate: true,
         })
     }
 
@@ -296,7 +337,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         const despawnX = -despawnWidth / 2 - config.minGap - 100
         const despawnY = 0
         this.despawnArea.setPosition(despawnX, despawnY)
-        this.despawnArea.setSize(despawnWidth, this.mainCamera.height)
+        this.despawnArea.setSize(despawnWidth, this.mainCamera.height * 3)
     }
 
     private spawnPlatform(x?: number, y?: number): Platform | null {
@@ -339,6 +380,9 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         // set the platform to be active and awake
         this.activatePlatform(platform, true, spawnX, spawnY, true, true)
 
+        // add condiments
+        this.addOptionalCondiments(platform)
+
         return platform
     }
 
@@ -375,12 +419,68 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         this.setPlatform(platform, velocity, this.shadowColor)
     }
 
+    private activateCondiment(
+        condiment: PlatformCondiment,
+        reset?: boolean,
+        x?: number,
+        y?: number,
+        enableGameObject?: boolean,
+        showGameObject?: boolean
+    ) {
+        condiment.enableBody(reset, x, y, enableGameObject, showGameObject)
+        
+        const body = condiment.body as Phaser.Physics.Arcade.Body
+
+        if (body) {
+            body.setAllowGravity(false)
+            body.setImmovable(true)
+            body.pushable = false
+        } else {
+            throw new Error('body is undefined')
+        }
+
+        const velocity = this.gameState.getPlatformVelocity()
+
+        condiment.setVelocityX(velocity)
+    }
+
+    private addOptionalCondiments(platform: Platform) {
+        Object.keys(this.config.condimentPropability).forEach(condimentType => {
+            const key = condimentType as keyof typeof this.config.condimentPropability
+
+            if (this.config.condimentPropability[key] > Math.random()) {
+                // get the condiment from the pool
+                const condiment = this.condimentGroup[key].getFirstDead(true, 0, 0, key)
+
+                if (!condiment) {
+                    console.warn('no dead condiments')
+                    return
+                }
+
+                if (!(condiment instanceof PlatformCondiment)) {
+                    throw new Error('condiment is not an instance of PlatformCondiment')
+                }
+
+                condiment.attachToPlatform(platform)
+                platform.addCondiment(condiment)
+
+                this.activateCondiment(condiment, true, platform.x, platform.y - platform.height / 2 - condiment.height / 2, true, true)
+            }
+        })
+    }
+
     private deactivatePlatform(
         platform: Platform,
         disableGameObject?: boolean,
         hideGameObject?: boolean
     ) {
+        platform.clearCondiments()
         platform.disableBody(disableGameObject, hideGameObject)
+    }
+
+    private deactivateCondiment(condiment: PlatformCondiment, disableGameObject?: boolean, hideGameObject?: boolean) {
+        condiment.detachFromPlatform()
+        condiment.disableBody(disableGameObject, hideGameObject)
     }
 
     /**

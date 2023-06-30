@@ -1,14 +1,8 @@
 import Phaser from 'phaser'
-import Player from '../player/Player'
 
 import Vector2 = Phaser.Math.Vector2
-
-type PlatformOverlayConfig = {
-    position: Vector2
-    size: Vector2
-    color: number
-    alpha: number
-}
+import Player from '../player/Player'
+import PlatformCondiment from './PlatformCondiment'
 
 const DEFAULT_PLATFORM_CONFIG: PlatformConfig = {
     width: 20,
@@ -25,6 +19,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
     private platformConfig: PlatformConfig
     private shadowColor: number
     private requiredAcc: number
+    private condiments: PlatformCondiment[]
 
     private mPlatform: PlatformOverlayConfig
     private lPlatform: PlatformOverlayConfig
@@ -43,6 +38,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, texture, frame)
         this.platformConfig = DEFAULT_PLATFORM_CONFIG
         this.requiredAcc = 1
+        this.condiments = []
 
         this.mPlatform = {
             position: new Vector2(),
@@ -74,7 +70,6 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
 
     preUpdate(time: number, delta: number): void {
         super.preUpdate(time, delta)
-
         if (this.platformConfig) {
             // update graphic position
             this.updateOverlayConfig()
@@ -185,21 +180,19 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
     }
 
     /**
-     * 
-     * @param player the player object
-     * @param accuracy the accuracy of the player's input
-     * @returns true if the collision was accurate, false otherwise
+     * @returns the platform configuration
      */
-    public applyCollision(
+    public getConfig(): PlatformConfig | undefined {
+        return this.platformConfig
+    }
+
+    public getCollisionType(
         player: Player,
         accuracy: number
-    ): boolean {
-        if (!this.platformConfig) {
-            throw new Error('platformConfig is undefined')
-        }
-
-        this.requiredAcc = accuracy
-
+    ): {
+        isAccurate: boolean,
+        isLeft: boolean,
+    } {
         // checks if any of the player's extent fall within the main platform's extent
         const playerWidth = player.width
 
@@ -214,8 +207,8 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         }
 
         // apply accuracy offset
-        playerExtentL += playerWidth * this.requiredAcc
-        playerExtentR -= playerWidth * this.requiredAcc
+        playerExtentL += playerWidth * accuracy
+        playerExtentR -= playerWidth * accuracy
 
         const isInaccurate =
             (playerExtentL <= platformExtentL && playerExtentR <= platformExtentL) ||
@@ -223,16 +216,51 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
 
         const isLeft = playerExtentL <= platformExtentL && playerExtentR <= platformExtentL
 
-        // change platform color
-        if (isInaccurate) {
-            this.setInaccurate(isLeft)
-        } else {
-            this.setAccurate()
+        return {
+            isAccurate: !isInaccurate,
+            isLeft: isLeft,
+        }
+    }
+
+    /**
+     * 
+     * @param player the player object
+     * @param accuracy the accuracy of the player's input
+     * @returns how the player landed on the platform
+     */
+    public applyCollision(
+        player: Player,
+        accuracy: number
+    ): {
+        isAccurate: boolean,
+        isLeft: boolean,
+    } {
+        if (!this.platformConfig) {
+            throw new Error('platformConfig is undefined')
         }
 
-        this.setVelocityY(200)
+        this.requiredAcc = accuracy
 
-        return !isInaccurate
+        const { isAccurate, isLeft } = this.getCollisionType(player, accuracy)
+
+        // change platform color
+        if (isAccurate) {
+            this.setAccurate()
+        } else {
+            this.setInaccurate(isLeft)
+        }
+
+        this.setVelocityY(400)
+
+        // propogate to condiments
+        this.condiments.forEach((condiment) => {
+            condiment.onCollisionWithPlayer(player, isAccurate, isLeft)
+        })
+
+        return {
+            isAccurate,
+            isLeft,
+        }
     }
 
     /**
@@ -241,5 +269,17 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
      */
     public setShadowColor(color: number): void {
         this.shadowColor = color
+    }
+
+    public addCondiment(condiment: PlatformCondiment): void {
+        this.condiments.push(condiment)
+    }
+
+    public getCondiments(): PlatformCondiment[] {
+        return this.condiments
+    }
+
+    public clearCondiments(): void {
+        this.condiments = []
     }
 }

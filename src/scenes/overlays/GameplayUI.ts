@@ -31,7 +31,7 @@ export default class GameplayUI extends Phaser.Scene {
         this.load.svg('pause-button', 'assets/ui/pause.svg', { width: 100, height: 100 })
         this.load.svg('play-button', 'assets/ui/play.svg', { width: 100, height: 100 })
         this.load.svg('volume-button', 'assets/ui/volume.svg', { width: 50, height: 50 })
-        this.load.image('coin', 'assets/items/diamond.png')
+        this.load.image('ui-coin', 'assets/items/diamond.png')
     }
 
     public create(): void {

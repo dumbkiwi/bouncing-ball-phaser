@@ -22,6 +22,9 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
         this.load.image('player', 'assets/bouncing-ball/1x/pearl_light.png')
         this.load.svg('platform', 'assets/shapes/square.svg')
         this.load.svg('square', 'assets/shapes/square.svg')
+        this.load.svg('left-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
+        this.load.svg('right-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
+        this.load.image('coin' as PlatformCondimentType, 'assets/items/diamond.png')
 
         this.gameState = new GameplayStateMachine(new StaticState())
     }

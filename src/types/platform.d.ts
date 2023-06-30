@@ -15,6 +15,7 @@ type PlatformSpawnerConfig = {
     maxPlatformWidth: number
     requiredAcc: number
     platformColor: PlatformColorConfig
+    condimentPropability: CondimentPropability
 }
 
 type PlatformConfig = {
@@ -22,4 +23,11 @@ type PlatformConfig = {
     height: number
     extraWidth: number
     platformColor: PlatformColorConfig
+}
+
+type PlatformOverlayConfig = {
+    position: Vector2
+    size: Vector2
+    color: number
+    alpha: number
 }
