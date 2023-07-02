@@ -2,10 +2,9 @@ import SceneController, { SceneKeys } from '@/scenes/SceneController'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import TextButton from './TextButton'
 import Gameplay from '@/scenes/gameplay-scenes/Gameplay'
+import { SetPlayerDataAction, getPlayerData, setPlayerData } from '../player/PlayerContext'
 
 export default class GameOver extends Phaser.GameObjects.Container {
-    private targetScene: Gameplay | undefined
-
     private scoreText: Phaser.GameObjects.Text
     private bestScoreText: Phaser.GameObjects.Text
     private coinText: Phaser.GameObjects.Text
@@ -198,13 +197,27 @@ export default class GameOver extends Phaser.GameObjects.Container {
     }
 
     public setTargetScene(scene: Gameplay) {
-        this.targetScene = scene
+        const score = scene.getScoreManager().getScore()
+        const highScore = scene.getScoreManager().getHighScore()
+        const coins = getPlayerData(this.scene).coins
 
-        this.setScore(scene.getScoreManager().getScore())
-        this.setHighScore(scene.getScoreManager().getHighScore())
-        this.setCoin(scene.getScoreManager().getCoin())
+        this.setScore(score)
+        this.setHighScore(highScore)
+        this.setCoins(coins)
 
-        scene.getScoreManager().saveScore()
+        setPlayerData(this.scene, {
+            type: SetPlayerDataAction.SET_COINS,
+            payload: coins,
+        })
+
+        setPlayerData(this.scene, {
+            type: SetPlayerDataAction.SET_HIGH_SCORE,
+            payload: highScore,
+        })
+
+        setPlayerData(this.scene, {
+            type: SetPlayerDataAction.SAVE,
+        })
     }
 
     private setScore(score: number) {
@@ -215,7 +228,7 @@ export default class GameOver extends Phaser.GameObjects.Container {
         this.bestScoreText.setText(`Best: ${score}`)
     }
 
-    private setCoin(coin: number) {
+    private setCoins(coin: number) {
         this.coinText.setText(coin.toString())
     }
 }

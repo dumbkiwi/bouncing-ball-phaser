@@ -1,4 +1,3 @@
-import DEFAULT_PLAYER_DATA from '@/constants/playerData'
 import Vector2 = Phaser.Math.Vector2
 import GameplayStateMachine, { GameOverState } from '../gameplay-state/GameplayState'
 import ScoreManager from '../score/ScoreManager'
@@ -21,11 +20,10 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         x: number,
         y: number,
         texture: string,
-        frame: string | number,
         scoreManager: ScoreManager,
         gameState: GameplayStateMachine
     ) {
-        super(scene, x, y, texture, frame)
+        super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.add.existing(this)
 
@@ -206,34 +204,5 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
     public getScoreManager() {
         return this.scoreManager
-    }
-
-    public savePlayer() {
-        const savedPlayer = Player.loadPlayer()
-
-        const playerData: PlayerData = {
-            ...savedPlayer,
-            coins: this.scoreManager.getCoin(),
-            highScore: this.scoreManager.getHighScore(),
-        }
-
-        localStorage.setItem('player', JSON.stringify(playerData))
-    }
-
-    public static loadPlayer(): PlayerData {
-        const data = localStorage.getItem('player')
-        
-        if (data) {
-            const parsedData = JSON.parse(data)
-
-            if (parsedData satisfies PlayerData) {
-                return {
-                    ...DEFAULT_PLAYER_DATA,
-                    ...parsedData,
-                }
-            }
-        }       
-
-        return DEFAULT_PLAYER_DATA
     }
 }

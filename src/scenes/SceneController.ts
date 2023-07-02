@@ -8,6 +8,7 @@ import Credits from './menu-scenes/Credits'
 import OverlayUI from './overlays/OverlayUI'
 
 import SKINS from '@/constants/skins'
+import { registerPlayerData } from '@/classes/player/PlayerContext'
 
 export enum SceneKeys {
     // scenes
@@ -55,6 +56,11 @@ export default class SceneController extends Phaser.Scene {
 
         this.load.image('skins-locked', 'assets/bouncing-ball/1x/locked.png')
         this.load.image('coin' as PlatformCondimentType, 'assets/items/diamond.png')
+    }
+
+    create() {
+        // register player data to registry
+        registerPlayerData(this)
     }
 
     public transitionTo(from: SceneKeys | undefined, to: SceneKeys) {

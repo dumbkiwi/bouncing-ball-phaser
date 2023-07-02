@@ -1,25 +1,11 @@
-const MULTIPLIER_THRESHOLD: {
-    [key: number]: number
-} = {
-    0: 1,
-    5: 2,
-    10: 3,
-    15: 4,
-    25: 5,
-    35: 6,
-    45: 7,
-    55: 8,
-    70: 9,
-    85: 10,
-}
+import MULTIPLIER_THRESHOLD from '@/constants/multiplier'
+import { getPlayerData } from '../player/PlayerContext'
 
 export default class ScoreManager extends Phaser.GameObjects.Group {
     private score: number
     private highScore: number
     private consecutiveHits: number
     private multiplier: number
-
-    private coin: number
 
     private highScoreText: Phaser.GameObjects.Text
     private scoreText: Phaser.GameObjects.Text
@@ -32,12 +18,17 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
             runChildUpdate: true,
         })
 
-        scene.add.existing(this)
+        const player = getPlayerData(scene)
 
-        const highScore = this.loadScore()
+        this.score = 0
+        this.highScore = player.highScore
+        this.consecutiveHits = 0
+        this.multiplier = 1
 
-        const highScoreText = scene.add
-            .text(x, y, highScore.toString(), {
+        this.scoreEvent = new Phaser.Events.EventEmitter()
+
+        this.highScoreText = scene.add
+            .text(x, y, this.highScore.toString(), {
                 fontFamily: 'Arial',
                 fontSize: 64,
                 fontStyle: 'bold',
@@ -46,8 +37,8 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
             })
             .setOrigin(0.5)
 
-        const score = scene.add
-            .text(x, y + 120, '0', {
+        this.scoreText = scene.add
+            .text(x, y + 120, this.score.toString(), {
                 fontFamily: 'Arial',
                 fontSize: 128,
                 fontStyle: 'bold',
@@ -56,8 +47,8 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
             })
             .setOrigin(0.5)
 
-        const multiplier = scene.add
-            .text(x, y + 240, 'x1', {
+        this.multiplierText = scene.add
+            .text(x, y + 240, `x${this.multiplier.toString()}`, {
                 fontFamily: 'Arial',
                 fontSize: 92,
                 fontStyle: 'bold',
@@ -66,24 +57,40 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
             })
             .setOrigin(0.5)
 
-        this.add(highScoreText)
-        this.add(score)
-        this.add(multiplier)
+        this.add(this.highScoreText)
+        this.add(this.scoreText)
+        this.add(this.multiplierText)
+    }
 
-        const coin = this.loadCoin()
+    private addScore(): number {
+        this.score += 1 * this.multiplier
+        this.scoreText.setText(this.score.toString())
 
-        this.score = 0
-        this.highScore = highScore
-        this.consecutiveHits = 0
-        this.multiplier = 1
+        if (this.score > this.highScore) {
+            this.highScore = this.score
+            this.highScoreText.setText(`${this.highScore}`)
+        }
 
-        this.coin = coin
+        this.emitScoreChange()
 
-        this.highScoreText = highScoreText
-        this.scoreText = score
-        this.multiplierText = multiplier
+        return this.score
+    }
 
-        this.scoreEvent = new Phaser.Events.EventEmitter()
+    private tryIncrementMultiplier() {
+        this.consecutiveHits += 1
+
+        if (this.consecutiveHits in MULTIPLIER_THRESHOLD) {
+            this.incrementMultiplier()
+        }
+    }
+
+    private incrementMultiplier() {
+        this.multiplier = MULTIPLIER_THRESHOLD[this.consecutiveHits]
+        this.multiplierText.setText(`x${this.multiplier}`)
+    }
+
+    private emitScoreChange() {
+        this.scoreEvent.emit('scoreChange', this.score, this.consecutiveHits, this.multiplier)
     }
 
     /**
@@ -101,132 +108,43 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
         return this.addScore()
     }
 
-    private addScore(): number {
-        this.score += 1 * this.multiplier
-        this.scoreText.setText(this.score.toString())
-
-        if (this.score > this.highScore) {
-            this.highScore = this.score
-            this.highScoreText.setText(`${this.highScore}`)
-        }
-
-        this.emitScoreChange()
-
-        return this.score
-    }
-
-    public resetMultiplier() {
+    /**
+     * Reset the multiplier
+     */
+   public resetMultiplier() {
         this.consecutiveHits = 0
         this.multiplier = 1
         this.multiplierText.setText(`x${this.multiplier}`)
     }
 
-    private tryIncrementMultiplier() {
-        this.consecutiveHits += 1
-
-        if (this.consecutiveHits in MULTIPLIER_THRESHOLD) {
-            this.incrementMultiplier()
-        }
-    }
-
-    private incrementMultiplier() {
-        this.multiplier = MULTIPLIER_THRESHOLD[this.consecutiveHits]
-        this.multiplierText.setText(`x${this.multiplier}`)
-    }
-
-    public resetScore() {
-        this.score = 0
-        this.scoreText.setText(`${this.score}`)
-    }
-
-    public saveScore() {
-        const player = localStorage.getItem('player')
-
-        if (player) {
-            const playerData = JSON.parse(player) as PlayerData
-
-            if (playerData.highScore < this.highScore) {
-                playerData.highScore = this.highScore
-                localStorage.setItem('player', JSON.stringify(playerData))
-            }
-        }
-    }
-
-    public loadScore() {
-        const player = localStorage.getItem('player')
-
-        if (player) {
-            const playerData = JSON.parse(player) as PlayerData
-
-            if (playerData)
-            return playerData.highScore
-        }
-
-        return 0
-    }
-
-    public loadCoin() {
-        const player = localStorage.getItem('player')
-
-        if (player) {
-            const playerData = JSON.parse(player) as PlayerData
-
-            if (playerData) {
-                return playerData.coins
-            }
-        }
-
-        return 0
-    }
-
-    public getCoin() {
-        return this.coin
-    }
-
-    public addCoin(increment = 1): number {
-        this.coin += increment
-        
-        const playerData = JSON.parse(localStorage.getItem('player') as string) as PlayerData
-
-        playerData.coins = this.coin
-
-        localStorage.setItem('player', JSON.stringify(playerData))
-
-        return this.coin
-    }
-
-    public spendCoin(decrement = 1): number {
-        this.coin -= decrement
-
-        const playerData = JSON.parse(localStorage.getItem('player') as string) as PlayerData
-
-        playerData.coins = this.coin
-
-        localStorage.setItem('player', JSON.stringify(playerData))
-
-        return this.coin
-    }
-
+    /**
+     * Subscribe to score change
+     */
     public onScoreChange(
         callback: (score: number, consecutiveHits: number, multiplier: number) => void
     ) {
         this.scoreEvent.on('scoreChange', callback)
     }
 
+    /**
+     * Unsubscribe to score change
+     */
     public offScoreChange(
         callback: (score: number, consecutiveHits: number, multiplier: number) => void
     ) {
         this.scoreEvent.off('scoreChange', callback)
     }
 
-    private emitScoreChange() {
-        this.scoreEvent.emit('scoreChange', this.score, this.consecutiveHits, this.multiplier)
-    }
-
+    /**
+     * Get the current score
+     */
     public getScore() {
         return this.score
     }
 
+    /**
+     * Get the current high score
+     */
     public getHighScore() {
         return this.highScore
     }

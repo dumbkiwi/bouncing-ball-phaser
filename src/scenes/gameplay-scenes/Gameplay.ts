@@ -8,13 +8,14 @@ import GameplayUI from '../overlays/GameplayUI'
 import DifficultyManager from '@/classes/difficulty-manager/DifficultyManager'
 import COLOR_MAP from '@/constants/colorMap'
 import DIFFICULTY_RUBRICS from '@/constants/difficultyRubrics'
+import { getPlayerData } from '@/classes/player/PlayerContext'
 
 export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     scene!: Phaser.Scenes.ScenePlugin
 
     private spawner!: PlatformSpawner
 
-    private gameState!: GameplayStateMachine
+    private gameStateManager!: GameplayStateMachine
 
     private scoreManager!: ScoreManager
 
@@ -26,51 +27,41 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     }
 
     create() {
-        this.gameState = new GameplayStateMachine(new StaticState())
-        this.scene.launch(SceneKeys.GameUI)
-        this.scene.moveBelow(SceneKeys.GameUI)
-
-        const scoreManager = new ScoreManager(this, this.cameras.main.width / 2, 100)
-
+        const playerData = getPlayerData(this)
         const difficultyManager = new DifficultyManager(DIFFICULTY_RUBRICS)
 
-        const playerData = Player.loadPlayer()
-
+        this.gameStateManager = new GameplayStateMachine(new StaticState())
+        this.scoreManager = new ScoreManager(this, this.cameras.main.centerX, 100)
         const player = new Player(
             this,
             this.cameras.main.width / 2,
             450,
             `skins-${playerData.equippedSkin.toString()}`,
-            playerData.equippedSkin,
-            scoreManager,
-            this.gameState
+            this.scoreManager,
+            this.gameStateManager
         )
 
-        this.spawner = new PlatformSpawner(
+        this.spawner = this.add.existing(new PlatformSpawner(
             this.physics.world,
             this,
             player,
             difficultyManager.getPlatformConfig(0),
-            this.gameState,
+            this.gameStateManager,
             COLOR_MAP,
-            scoreManager
-        )
+            this.scoreManager
+        ))
 
-        this.add.existing(this.spawner)
         this.spawner.createMultiple({
             key: 'platform',
             quantity: 20,
         })
 
-        scoreManager.onScoreChange((score) => {
-            console.log('score change', score)
+        this.scoreManager.onScoreChange((score) => {
             this.spawner.setConfig(difficultyManager.getPlatformConfig(score))
         })
 
         // prespawn platforms
         this.spawner.prespawnPlatform()
-
-        this.scoreManager = scoreManager
     }
 
     createOverlay(): Promise<void> {
@@ -99,7 +90,7 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     }
 
     public getGameState(): GameplayStateMachine {
-        return this.gameState
+        return this.gameStateManager
     }
 
     public getScoreManager(): ScoreManager {

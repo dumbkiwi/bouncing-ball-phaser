@@ -1,4 +1,5 @@
 import Player from "../player/Player"
+import { SetPlayerDataAction, getPlayerData, setPlayerData } from "../player/PlayerContext"
 import Platform from "./Platform"
 import PlatformCondiment from "./PlatformCondiment"
 
@@ -17,7 +18,11 @@ export default class Coin extends PlatformCondiment {
     
     public onCollisionWithPlayer(player: Player, isAccurateHit: boolean, _isLeftSide: boolean): void {
         if (isAccurateHit) {
-            player.getScoreManager().addCoin()
+            setPlayerData(this.scene, {
+                type: SetPlayerDataAction.SET_COINS,
+                payload: getPlayerData(this.scene).coins + 1,
+            })
+
             this.disableBody(true, true)
         }
     }

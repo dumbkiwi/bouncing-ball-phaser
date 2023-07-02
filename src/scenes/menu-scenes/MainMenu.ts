@@ -4,6 +4,7 @@ import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js'
 import Vector2 = Phaser.Math.Vector2
 import TextButton from '@/classes/ui/TextButton'
 import SceneController, { SceneKeys } from '../SceneController'
+import { getPlayerData } from '@/classes/player/PlayerContext'
 
 const DEFAULT_SPACING = 30
 const DEFAULT_DISTANCE = 200
@@ -126,17 +127,14 @@ const SAD: SpawnerState = {
 export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
     rexUI!: RexUIPlugin
     private avatar!: Spawner
-    private logo!: Phaser.GameObjects.Sprite
 
     constructor() {
         super('MainMenu')
     }
 
-    public preload(): void {
-        this.load.svg('title-logo', 'assets/volleyball.svg', { width: 150, height: 150 })
-    }
-
     public create(): void {
+        const playerData = getPlayerData(this)
+
         this.add
             .rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0xffffff, 1)
             .setOrigin(0, 0)
@@ -159,7 +157,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
 
         this.add.existing(spawner)
 
-        const logoSprite = this.add.sprite(logoX, logoY, 'title-logo')
+        const logoSprite = this.add.sprite(logoX, logoY, `skins-${playerData.equippedSkin}`).setScale(0.8)
 
         // spind the logo
         this.tweens.add({
@@ -172,7 +170,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
         // pulse the logo's scale
         this.tweens.add({
             targets: logoSprite,
-            scale: 1.2,
+            scale: 1,
             duration: 10000,
             yoyo: true,
             ease: 'Sine.easeInOut',
@@ -198,7 +196,6 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
         sizer.layout()
 
         this.avatar = spawner
-        this.logo = logoSprite
     }
 
     private createWindow(sizer: RexUIPlugin.Sizer): RexUIPlugin.Sizer {
