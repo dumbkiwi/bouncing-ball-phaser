@@ -75,7 +75,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 }
 
                 // if it is an accurate hit, add chainable score
-                const {isAccurate} = colliderPlatform.applyCollision(
+                const {isAccurate, isLeft} = colliderPlatform.applyCollision(
                     player,
                     this.config.requiredAcc
                 )
@@ -84,6 +84,23 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
                 // apply force onto player
                 this.bouncePlayer(player)
+
+                // add spin to player
+                const body = this.player.body as Phaser.Physics.Arcade.Body
+                let newAngularVelocity = body.angularVelocity
+
+                
+                if (isAccurate) {
+                    newAngularVelocity += Math.random() * 400
+                } else {
+                    if (isLeft) {
+                        newAngularVelocity = -Math.random() * 300
+                    } else {
+                        newAngularVelocity += Math.random() * 200
+                    }
+                }
+
+                this.player.setAngularVelocity(newAngularVelocity)
 
                 // create particle
                 this.player.emitParticles()
@@ -172,13 +189,6 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         bodiesToDespawn.forEach((body) => {
             if (body.gameObject instanceof Platform && body.gameObject.active) {
                 this.deactivatePlatform(body.gameObject, true, true)
-            }
-
-            if (
-                body.gameObject instanceof PlatformCondiment &&
-                body.gameObject.active
-            ) {
-                this.deactivateCondiment(body.gameObject, true, true)
             }
         })
     }
@@ -326,7 +336,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             despawnX,
             despawnY,
             despawnWidth,
-            this.mainCamera.height * 3,
+            this.mainCamera.height * 10,
             0xff0000,
             0
         ).setOrigin(0.5, 0)
@@ -337,7 +347,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         const despawnX = -despawnWidth / 2 - config.minGap - 100
         const despawnY = 0
         this.despawnArea.setPosition(despawnX, despawnY)
-        this.despawnArea.setSize(despawnWidth, this.mainCamera.height * 3)
+        this.despawnArea.setSize(despawnWidth, this.mainCamera.height * 10)
     }
 
     private spawnPlatform(x?: number, y?: number): Platform | null {
@@ -439,9 +449,9 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             throw new Error('body is undefined')
         }
 
-        const velocity = this.gameState.getPlatformVelocity()
+        // const velocity = this.gameState.getPlatformVelocity()
 
-        condiment.setVelocityX(velocity)
+        // condiment.setVelocityX(velocity)
     }
 
     private addOptionalCondiments(platform: Platform) {
@@ -479,6 +489,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     }
 
     private deactivateCondiment(condiment: PlatformCondiment, disableGameObject?: boolean, hideGameObject?: boolean) {
+        // debugger
         condiment.detachFromPlatform()
         condiment.disableBody(disableGameObject, hideGameObject)
     }

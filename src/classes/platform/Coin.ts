@@ -11,15 +11,15 @@ export default class Coin extends PlatformCondiment {
     }
     
     public detachFromPlatform(): void {
+        this.platform = undefined
         this.scene.events.off('postupdate', this.followPlatform, this)
     }
     
-    public onCollisionWithPlayer(player: Player, isAccurateHit: boolean, isLeftSide: boolean): void {
-        if (!isAccurateHit) {
+    public onCollisionWithPlayer(player: Player, isAccurateHit: boolean, _isLeftSide: boolean): void {
+        if (isAccurateHit) {
             player.getScoreManager().addCoin()
+            this.disableBody(true, true)
         }
-
-        this.disableBody(true, true)
     }
 
     private followPlatform(): void {

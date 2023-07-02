@@ -18,6 +18,7 @@ export default abstract class Spike extends PlatformCondiment {
     }
 
     public detachFromPlatform(): void {
+        this.platform = undefined
         this.scene.events.off('postupdate', this.followPlatform, this)
     }
 
