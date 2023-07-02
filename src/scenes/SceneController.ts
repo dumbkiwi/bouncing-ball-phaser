@@ -7,6 +7,8 @@ import GameSettings from './menu-scenes/GameSettings'
 import Credits from './menu-scenes/Credits'
 import OverlayUI from './overlays/OverlayUI'
 
+import SKINS from '@/constants/skins'
+
 export enum SceneKeys {
     // scenes
     Credits = 'Credits',
@@ -40,13 +42,19 @@ export default class SceneController extends Phaser.Scene {
         // overlays
         this.game.scene.add(SceneKeys.GameUI, UI, false)
         this.game.scene.add(SceneKeys.OverlayingUI, OverlayUI, false)
-        this.game.scene.add(SceneKeys.Loading, Loading, true)
-    }
+        const loadingScene = this.game.scene.add(SceneKeys.Loading, Loading, true)
 
-    create() {
-        this.game.scene.getScene(SceneKeys.Loading).load.once('complete', () => {
+        loadingScene?.events.once('create', () => {
             this.transitionTo(undefined, SceneKeys.MainMenu)
         })
+
+        // skins
+        SKINS.forEach((skin) => {
+            this.load.image(`skins-${skin.id}`, skin.url)
+        })
+
+        this.load.image('skins-locked', 'assets/bouncing-ball/1x/locked.png')
+        this.load.image('coin' as PlatformCondimentType, 'assets/items/diamond.png')
     }
 
     public transitionTo(from: SceneKeys | undefined, to: SceneKeys) {
@@ -85,7 +93,7 @@ export default class SceneController extends Phaser.Scene {
             // start next scene
             this.scene.launch(to)
 
-            nextScene.load.once('complete', () => {
+            nextScene.events.once('ready', () => {
                 nextScene.createOverlay().then(() => {
                     loadingScene.transitionOut()
                 })

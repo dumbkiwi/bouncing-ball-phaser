@@ -140,24 +140,40 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
     }
 
     public saveScore() {
-        localStorage.setItem('score', this.highScore.toString())
+        const player = localStorage.getItem('player')
+
+        if (player) {
+            const playerData = JSON.parse(player) as PlayerData
+
+            if (playerData.highScore < this.highScore) {
+                playerData.highScore = this.highScore
+                localStorage.setItem('player', JSON.stringify(playerData))
+            }
+        }
     }
 
     public loadScore() {
-        const item = localStorage.getItem('score')
+        const player = localStorage.getItem('player')
 
-        if (item) {
-            return parseInt(item)
+        if (player) {
+            const playerData = JSON.parse(player) as PlayerData
+
+            if (playerData)
+            return playerData.highScore
         }
 
         return 0
     }
 
     public loadCoin() {
-        const item = localStorage.getItem('coin')
+        const player = localStorage.getItem('player')
 
-        if (item) {
-            return parseInt(item)
+        if (player) {
+            const playerData = JSON.parse(player) as PlayerData
+
+            if (playerData) {
+                return playerData.coins
+            }
         }
 
         return 0
@@ -169,14 +185,24 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
 
     public addCoin(increment = 1): number {
         this.coin += increment
-        localStorage.setItem('coin', this.coin.toString())
+        
+        const playerData = JSON.parse(localStorage.getItem('player') as string) as PlayerData
+
+        playerData.coins = this.coin
+
+        localStorage.setItem('player', JSON.stringify(playerData))
 
         return this.coin
     }
 
     public spendCoin(decrement = 1): number {
         this.coin -= decrement
-        localStorage.setItem('coin', this.coin.toString())
+
+        const playerData = JSON.parse(localStorage.getItem('player') as string) as PlayerData
+
+        playerData.coins = this.coin
+
+        localStorage.setItem('player', JSON.stringify(playerData))
 
         return this.coin
     }

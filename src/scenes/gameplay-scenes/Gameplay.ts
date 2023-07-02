@@ -19,17 +19,14 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     private scoreManager!: ScoreManager
 
     preload() {
-        this.load.image('player', 'assets/bouncing-ball/1x/pearl_light.png')
         this.load.svg('platform', 'assets/shapes/square.svg')
         this.load.svg('square', 'assets/shapes/square.svg')
         this.load.svg('left-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
         this.load.svg('right-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
-        this.load.image('coin' as PlatformCondimentType, 'assets/items/diamond.png')
-
-        this.gameState = new GameplayStateMachine(new StaticState())
     }
 
     create() {
+        this.gameState = new GameplayStateMachine(new StaticState())
         this.scene.launch(SceneKeys.GameUI)
         this.scene.moveBelow(SceneKeys.GameUI)
 
@@ -37,11 +34,14 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
 
         const difficultyManager = new DifficultyManager(DIFFICULTY_RUBRICS)
 
+        const playerData = Player.loadPlayer()
+
         const player = new Player(
             this,
             this.cameras.main.width / 2,
             450,
-            'player',
+            `skins-${playerData.equippedSkin.toString()}`,
+            playerData.equippedSkin,
             scoreManager,
             this.gameState
         )
