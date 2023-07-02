@@ -4,10 +4,7 @@ import OverlayUI from '../overlays/OverlayUI'
 
 export default class Credits extends Phaser.Scene {
     rexUI!: RexUIPlugin
-    preload() {
-        //
-    }
-
+    
     create() {
         const width = this.cameras.main.width - 100
         const sizer = this.rexUI.add.sizer({

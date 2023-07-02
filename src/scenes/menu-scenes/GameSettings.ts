@@ -4,9 +4,6 @@ import OverlayUI from '../overlays/OverlayUI'
 
 export default class GameSettings extends Phaser.Scene implements SceneWithOverlay {
     rexUI!: RexUIPlugin
-    preload() {
-        //
-    }
 
     createOverlay(): Promise<void> {
         return new Promise<void>((resolve) => {
