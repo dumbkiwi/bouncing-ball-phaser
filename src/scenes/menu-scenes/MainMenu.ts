@@ -57,20 +57,20 @@ const EXCITED: SpawnerState = {
 
 const FOCUSED: SpawnerState = {
     spacing: {
-        [Direction.TOP]: DEFAULT_SPACING * 10,
-        [Direction.DOWN]: DEFAULT_SPACING * 10,
-        [Direction.LEFT]: DEFAULT_SPACING * 10,
-        [Direction.RIGHT]: DEFAULT_SPACING * 10,
-        [Direction.TOP_LEFT]: DEFAULT_SPACING * 10,
-        [Direction.TOP_RIGHT]: DEFAULT_SPACING * 10,
-        [Direction.DOWN_LEFT]: DEFAULT_SPACING * 10,
-        [Direction.DOWN_RIGHT]: DEFAULT_SPACING * 10,
+        [Direction.TOP]: 0,
+        [Direction.DOWN]: 0,
+        [Direction.LEFT]: 0,
+        [Direction.RIGHT]: 0,
+        [Direction.TOP_LEFT]: 0,
+        [Direction.TOP_RIGHT]: 0,
+        [Direction.DOWN_LEFT]: 0,
+        [Direction.DOWN_RIGHT]: 0,
     },
     distance: {
-        [Direction.TOP]: DEFAULT_DISTANCE,
-        [Direction.DOWN]: DEFAULT_DISTANCE,
-        [Direction.LEFT]: DEFAULT_DISTANCE,
-        [Direction.RIGHT]: DEFAULT_DISTANCE,
+        [Direction.TOP]: DEFAULT_DISTANCE * 1.5,
+        [Direction.DOWN]: DEFAULT_DISTANCE * 1.5,
+        [Direction.LEFT]: DEFAULT_DISTANCE / 3,
+        [Direction.RIGHT]: DEFAULT_DISTANCE / 3,
         [Direction.TOP_LEFT]: DEFAULT_DISTANCE,
         [Direction.TOP_RIGHT]: DEFAULT_DISTANCE,
         [Direction.DOWN_LEFT]: DEFAULT_DISTANCE,
@@ -103,20 +103,20 @@ const ANGRY: SpawnerState = {
 
 const SAD: SpawnerState = {
     spacing: {
-        [Direction.TOP]: DEFAULT_SPACING * 20,
-        [Direction.DOWN]: DEFAULT_SPACING * 20,
-        [Direction.LEFT]: DEFAULT_SPACING * 20,
-        [Direction.RIGHT]: DEFAULT_SPACING * 20,
-        [Direction.TOP_LEFT]: DEFAULT_SPACING / 2,
-        [Direction.TOP_RIGHT]: DEFAULT_SPACING / 2,
-        [Direction.DOWN_LEFT]: DEFAULT_SPACING / 2,
-        [Direction.DOWN_RIGHT]: DEFAULT_SPACING / 2,
+        [Direction.TOP]: DEFAULT_SPACING * 10,
+        [Direction.DOWN]: DEFAULT_SPACING * 10,
+        [Direction.LEFT]: DEFAULT_SPACING * 10,
+        [Direction.RIGHT]: DEFAULT_SPACING * 10,
+        [Direction.TOP_LEFT]: 0,
+        [Direction.TOP_RIGHT]: 0,
+        [Direction.DOWN_LEFT]: 0,
+        [Direction.DOWN_RIGHT]: 0,
     },
     distance: {
-        [Direction.TOP]: DEFAULT_DISTANCE,
-        [Direction.DOWN]: DEFAULT_DISTANCE,
-        [Direction.LEFT]: DEFAULT_DISTANCE,
-        [Direction.RIGHT]: DEFAULT_DISTANCE,
+        [Direction.TOP]: DEFAULT_DISTANCE / 4,
+        [Direction.DOWN]: DEFAULT_DISTANCE / 4,
+        [Direction.LEFT]: DEFAULT_DISTANCE / 4,
+        [Direction.RIGHT]: DEFAULT_DISTANCE / 4,
         [Direction.TOP_LEFT]: DEFAULT_DISTANCE,
         [Direction.TOP_RIGHT]: DEFAULT_DISTANCE,
         [Direction.DOWN_LEFT]: DEFAULT_DISTANCE,
@@ -232,7 +232,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
         })
 
         skinsButton.on('pointerover', () => {
-            this.avatar.transitionTo(FOCUSED)
+            this.avatar.transitionTo(ANGRY)
         })
 
         skinsButton.on('pointerout', () => {
@@ -240,7 +240,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
         })
 
         settingsButton.on('pointerover', () => {
-            this.avatar.transitionTo(ANGRY)
+            this.avatar.transitionTo(FOCUSED)
         })
 
         settingsButton.on('pointerout', () => {
