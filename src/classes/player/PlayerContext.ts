@@ -6,6 +6,7 @@ export enum SetPlayerDataAction {
     SET_COINS = 'SET_COINS',
     SET_EQUIPPED_SKIN = 'SET_EQUIPPED_SKIN',
     SET_OWNED_SKINS = 'SET_OWNED_SKINS',
+    SET_SETTINGS = 'SET_SETTINGS',
 }
 
 export function registerPlayerData(scene: Phaser.Scene) {
@@ -26,7 +27,7 @@ export function getPlayerData(scene: Phaser.Scene): PlayerData {
 
 export function setPlayerData(scene: Phaser.Scene, action: {
     type: SetPlayerDataAction,
-    payload?: number | number[],
+    payload?: number | number[] | {volume: number},
     saveImmediately?: boolean
 }) {
     const player = getPlayerData(scene)
@@ -73,6 +74,20 @@ export function setPlayerData(scene: Phaser.Scene, action: {
             }
 
             player.ownedSkins = action.payload
+            saveToRegistry(scene, player)
+
+            break
+
+        case SetPlayerDataAction.SET_SETTINGS:
+            if (!isNotNullOrUndefined(action.payload) || typeof action.payload !== 'object') {
+                throw new Error('Invalid payload for SET_SETTINGS action')
+            }
+
+            player.settings = {
+                ...player.settings,
+                ...action.payload
+            }
+
             saveToRegistry(scene, player)
 
             break

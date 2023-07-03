@@ -1,5 +1,6 @@
 import MULTIPLIER_THRESHOLD from '@/constants/multiplier'
 import { getPlayerData } from '../player/PlayerContext'
+import { playScore, playScoreChain } from '../sound-manager/SoundManager'
 
 export default class ScoreManager extends Phaser.GameObjects.Group {
     private score: number
@@ -100,8 +101,14 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
      */
     public tryAddScore(isChainable = false): number {
         if (isChainable) {
+            // play audio
+            playScoreChain(this.scene, this.consecutiveHits)
+
             this.tryIncrementMultiplier()
         } else {
+            // play audio
+            playScore(this.scene)
+
             this.resetMultiplier()
         }
 

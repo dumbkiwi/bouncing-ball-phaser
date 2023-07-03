@@ -1,9 +1,11 @@
 import SceneController, { SceneKeys } from '@/scenes/SceneController'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import TextButton from './TextButton'
+import { SetPlayerDataAction, setPlayerData } from '../player/PlayerContext'
 
 export default class QuickSettings extends Phaser.GameObjects.Container {
     private targetScene: Phaser.Scene | undefined
+    private volumeSlider: RexUIPlugin.Slider | undefined
 
     constructor(scene: Phaser.Scene, rexUI: RexUIPlugin) {
         super(scene, 0, 0)
@@ -43,6 +45,21 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
         )
 
         // volume
+        this.volumeSlider = 
+            rexUI.add
+                .slider({
+                    width: 200,
+                    height: 20,
+                    orientation: 'x',
+                    track: rexUI.add.roundRectangle(0, 0, 0, 0, 10, 0xaaaaaa),
+                    indicator: rexUI.add.roundRectangle(0, 0, 0, 0, 6, 0x666666),
+                    thumb: rexUI.add.roundRectangle(0, 0, 0, 0, 16, 0x666666),
+                    valuechangeCallback: (value: number) => {
+                        this.changeVolume(value)
+                    },
+                    input: 'click',
+                })
+                .setValue(1)
         sizer.add(
             rexUI.add
                 .sizer({ orientation: 'x' })
@@ -56,28 +73,12 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
                     'center'
                 )
                 // volume slider
-                .add(
-                    rexUI.add
-                        .slider({
-                            width: 200,
-                            height: 20,
-                            orientation: 'x',
-                            track: rexUI.add.roundRectangle(0, 0, 0, 0, 10, 0xaaaaaa),
-                            indicator: rexUI.add.roundRectangle(0, 0, 0, 0, 6, 0x666666),
-                            thumb: rexUI.add.roundRectangle(0, 0, 0, 0, 16, 0x666666),
-                            valuechangeCallback: (value: number) => {
-                                this.changeVolume(value)
-                            },
-                            input: 'click',
-                        })
-                        .setValue(1),
-                    1,
+                .add(this.volumeSlider, 1,
                     'center',
                     {
                         left: 20,
                         right: 20,
-                    }
-                ),
+                    }),
             0,
             'left',
             {
@@ -126,6 +127,12 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
 
     public setTargetScene(scene: Phaser.Scene | undefined) {
         this.targetScene = scene
+
+        if (!this.targetScene) {
+            return
+        }
+    
+        this.volumeSlider?.setValue(this.targetScene.sound.volume)
     }
 
     private changeVolume(value: number) {
@@ -134,6 +141,14 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
             return
         }
 
-        this.targetScene.sound.setVolume(value)
+        this.targetScene.sound.volume = value
+
+        setPlayerData(this.targetScene, {
+            type: SetPlayerDataAction.SET_SETTINGS,
+            payload: {
+                volume: value,
+            },
+            saveImmediately: true,
+        })
     }
 }
