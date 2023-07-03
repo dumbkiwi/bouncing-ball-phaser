@@ -114,9 +114,9 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         // explosion type
         return this.scene.add.particles(0, 0, 'square', {
             lifespan: 2000,
-            x: { min: -80, max: 80 },
-            y: { min: -400, max: 0 },
-            speedY: { min: -200, max: 200 },
+            // x: { min: -80, max: 80 },
+            // y: { min: -400, max: 0 },
+            speedY: { min: -500, max: 500 },
             speedX: { min: -500, max: 500 },
             accelerationX: { min: -200, max: 200 },
             scale: { start: 0.1, end: 0 },

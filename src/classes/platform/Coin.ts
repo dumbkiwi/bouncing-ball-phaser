@@ -6,6 +6,7 @@ import PlatformCondiment from './PlatformCondiment'
 
 export default class Coin extends PlatformCondiment {
     private platform: Platform | undefined
+    private particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter
 
     constructor(
         scene: Phaser.Scene,
@@ -17,6 +18,17 @@ export default class Coin extends PlatformCondiment {
         super(scene, x, y, texture, frame)
 
         this.setScale(2)
+        this.particleEmitter = this.scene.add.particles(0, 0, 'square', {
+            lifespan: 4000,
+            x: { min: -20, max: 20 },
+            speedY: { min: -400, max: 400 },
+            speedX: { min: -150, max: 150 },
+            gravityY: -2000,
+            scale: { start: 0.2, end: 0 },
+            color: [0x4cc2eb],
+            particleBringToTop: false,
+            emitting: false,
+        })
     }
 
     public attachToPlatform(platform: Platform): void {
@@ -37,6 +49,9 @@ export default class Coin extends PlatformCondiment {
         if (isAccurateHit) {
             // play audio
             playCoinPickup(this.scene)
+
+            // emit particles
+            this.particleEmitter.emitParticleAt(this.x, this.y, Math.random() * 10)
 
             setPlayerData(this.scene, {
                 type: SetPlayerDataAction.SET_COINS,
