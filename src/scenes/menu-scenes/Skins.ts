@@ -78,7 +78,6 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
 
         panel.setChildrenInteractive({})
         panel.on('child.click', this.onSkinSelection.bind(this))
-
         ;(panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragstart', () => {
             if (this.indicatorTween) {
                 this.indicatorTween.stop()
@@ -90,7 +89,6 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
                 duration: 100,
             })
         })
-
         ;(panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragend', () => {
             if (this.indicatorTween) {
                 this.indicatorTween.stop()

@@ -32,7 +32,7 @@ export default class GameOver extends Phaser.GameObjects.Container {
         })
 
         // // background
-        const bg = scene.add.rectangle(0, 0, width, height, 0xffffff, 0.5)
+        const bg = scene.add.rectangle(0, 0, width, height, 0xffffff, 0.8)
         sizer.addBackground(bg)
 
         // title
@@ -83,32 +83,35 @@ export default class GameOver extends Phaser.GameObjects.Container {
         })
 
         // coin
-        this.coinText = scene.add.text(0, 0, '0', {
-            fontSize: '32px',
-            color: '#666666',
-            fontFamily: 'Arial',
-            align: 'center',
-        })
+        this.coinText = scene.add
+            .text(0, 0, '0', {
+                fontSize: '32px',
+                color: '#666666',
+                fontFamily: 'Arial',
+                align: 'center',
+            })
+            .setOrigin(0.5)
 
         scoreSizer.add(
             rexUI.add
                 .label({
-                    width: 200,
+                    width: 250,
                     height: 80,
                     orientation: 'x',
+                    anchor: {
+                        centerX: 'center',
+                        centerY: 'center',
+                    },
                     background: rexUI.add
                         .roundRectangle(0, 0, 0, 0, 10)
                         .setStrokeStyle(1, 0x666666),
                     text: this.coinText,
-                    icon: scene.add.image(0, 0, 'ui-coin').setScale(2),
+                    icon: scene.add.image(0, 0, 'ui-coin').setScale(1.8),
                     space: {
-                        icon: 10,
-                        left: 15,
-                        right: 15,
+                        icon: 30,
                     },
                     align: 'center',
                 })
-                .layout()
                 .setDepth(1),
             0,
             'center',
