@@ -28,6 +28,8 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
     private graphics: Phaser.GameObjects.Graphics
     private mainCamera: Phaser.Cameras.Scene2D.Camera
 
+    private particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter
+
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -66,6 +68,19 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         this.shadowColor = 0x000000
 
         this.setAlpha(0)
+
+        this.particleEmitter = scene.add.particles(0, 0, 'square', {
+            lifespan: 600,
+            x: { min: -20, max: 20 },
+            speedY: { min: -100, max: 600 },
+            speedX: { min: -700, max: 200 },
+            scale: { start: 0.15, end: 0 },
+            color: [0x666666],
+            accelerationX: -800,
+            accelerationY: 1000,
+            particleBringToTop: false,
+            emitting: false,
+        })
     }
 
     preUpdate(time: number, delta: number): void {
@@ -190,34 +205,18 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
 
     public getCollisionType(
         player: Player,
-        accuracy: number
+        _accuracy: number
     ): {
         isAccurate: boolean,
         isLeft: boolean,
     } {
-        // checks if any of the player's extent fall within the main platform's extent
-        const playerWidth = player.displayWidth
-
         const playerX = player.getCenter().x ?? 0
-        // let playerExtentL = player.getCenter().x ?? 0 - playerWidth / 2
-        // let playerExtentR = player.getCenter().x ?? 0 + playerWidth / 2
 
         const platformExtentL = this.mPlatform.position.x - this.mPlatform.size.x / 2
         const platformExtentR = this.mPlatform.position.x + this.mPlatform.size.x / 2
 
-        // if (playerExtentL === undefined || playerExtentR === undefined) {
-        //     throw new Error('undefined extents')
-        // }
-
-        // apply accuracy offset
-        // playerExtentL += playerWidth * accuracy
-        // playerExtentR -= playerWidth * accuracy
-
         const isInaccurate = playerX < platformExtentL || playerX > platformExtentR
-            // (playerExtentL <= platformExtentL && playerExtentR <= platformExtentL) ||
-            // (playerExtentL >= platformExtentR && playerExtentR >= platformExtentR)
-
-        // const isLeft = playerExtentL <= platformExtentL && playerExtentR <= platformExtentL
+        
         const isLeft = playerX < platformExtentL
 
         return {
@@ -250,15 +249,21 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         // change platform color
         if (isAccurate) {
             this.setAccurate()
+
+            // emit particles
+            this.particleEmitter.emitParticleAt(this.mPlatform.position.x, this.mPlatform.position.y, Math.random() * 10 + 10)
         } else {
             this.setInaccurate(isLeft)
+
+            // emit particles
+            if (isLeft) {
+                this.particleEmitter.emitParticleAt(this.lPlatform.position.x, this.lPlatform.position.y, Math.random() * 10)
+            } else {
+                this.particleEmitter.emitParticleAt(this.rPlatform.position.x, this.rPlatform.position.y, Math.random() * 10)
+            }
         }
 
         this.setVelocityY(400)
-
-        if (this.condiments.length === 0) {
-            // debugger
-        }
 
         // propogate to condiments
         this.condiments.forEach((condiment) => {
