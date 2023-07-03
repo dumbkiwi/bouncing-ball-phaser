@@ -37,8 +37,8 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
             orientation: 'y',
             x: this.cameras.main.centerX,
             y: this.cameras.main.centerY,
-            width: this.cameras.main.width - 150,
-            height: 1200,
+            width: this.cameras.main.width * 0.8,
+            height: this.cameras.main.height * 0.9,
         })
 
         // create indicator
@@ -77,9 +77,9 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
         )
 
         panel.setChildrenInteractive({})
-        panel.on('child.click', this.onSkinSelection.bind(this));
+        panel.on('child.click', this.onSkinSelection.bind(this))
 
-        (panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragstart', () => {
+        ;(panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragstart', () => {
             if (this.indicatorTween) {
                 this.indicatorTween.stop()
             }
@@ -89,15 +89,16 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
                 alpha: 0,
                 duration: 100,
             })
-        });
+        })
 
-        (panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragend', () => {
+        ;(panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragend', () => {
             if (this.indicatorTween) {
                 this.indicatorTween.stop()
             }
-            
+
             this.indicatorTween = this.tweens.add({
                 targets: this.indicator,
+                delay: 300,
                 alpha: 1,
                 duration: 100,
             })

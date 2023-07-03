@@ -106,6 +106,7 @@ export default class GameplayUI extends Phaser.Scene {
         this.pauseButton.setVisible(false)
 
         this.gameplayScene?.cameras.main.postFX.addPixelate(6)
+        this.gameplayScene?.cameras.main.setAlpha(0.8)
         this.gameoverContainer.setVisible(true)
         this.tweens.add({
             targets: this.gameoverContainer,

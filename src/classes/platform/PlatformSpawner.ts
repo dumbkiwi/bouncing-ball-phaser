@@ -9,7 +9,7 @@ import ScoreManager from '../score/ScoreManager'
 import Platform from './Platform'
 import PlatformCondiment from './PlatformCondiment'
 
-const BOUNCE_VELOCITY = 1000
+const BOUNCE_VELOCITY = 900
 
 export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private config: PlatformSpawnerConfig
@@ -354,11 +354,11 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         }
 
         const { left: spawnLeft, width: spawnWidth } = this.spawnArea.getBounds()
+        const maxHeight = this.scene.cameras.main.height * (1 - this.config.maxHeight)
+        const minHeight = this.scene.cameras.main.height * (1 - this.config.minHeight)
 
         const spawnX = x ?? Math.random() * spawnWidth + spawnLeft
-        const spawnY =
-            y ??
-            Math.random() * (this.config.maxHeight - this.config.minHeight) + this.config.minHeight
+        const spawnY = y ?? Math.random() * (maxHeight - minHeight) + minHeight
 
         const width =
             Math.random() * (this.config.maxPlatformWidth - this.config.minPlatformWidth) +

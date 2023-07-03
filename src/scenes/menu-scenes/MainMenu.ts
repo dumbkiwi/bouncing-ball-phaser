@@ -189,7 +189,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
                 bottom: 'bottom',
             },
             space: {
-                bottom: this.cameras.main.height * 0.1,
+                bottom: this.cameras.main.height * 0.05,
             },
         })
 
