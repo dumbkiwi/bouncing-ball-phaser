@@ -1,6 +1,7 @@
 import Vector2 = Phaser.Math.Vector2
 import GameplayStateMachine, { GameOverState } from '../gameplay-state/GameplayState'
 import ScoreManager from '../score/ScoreManager'
+import { playDeathSound } from '../sound-manager/SoundManager'
 
 export default class Player extends Phaser.Physics.Arcade.Image {
     private acceleration: Vector2
@@ -11,7 +12,6 @@ export default class Player extends Phaser.Physics.Arcade.Image {
     private scoreManager: ScoreManager
     private gameState: GameplayStateMachine
 
-    private emitter: Phaser.GameObjects.Particles.ParticleEmitter
     private deathEmitterFlow: Phaser.GameObjects.Particles.ParticleEmitter
     private deathEmitterExpl: Phaser.GameObjects.Particles.ParticleEmitter
 
@@ -72,7 +72,6 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
         this.preparePlayer()
 
-        this.emitter = emitter
         this.deathEmitterFlow = deathEmitter
         this.deathEmitterExpl = deathEmitterExpl
     }
@@ -101,7 +100,7 @@ export default class Player extends Phaser.Physics.Arcade.Image {
                 lifespan: 3000,
                 x: { min: -80, max: 80 },
                 speedY: { min: -200, max: 100 },
-                speedX: { min: -50, max: 50 },
+                speedX: { min: -200, max: 100 },
                 scale: { start: 0.1, end: 0 },
                 color: [0xee4444],
                 gravityY: -300,
@@ -162,6 +161,9 @@ export default class Player extends Phaser.Physics.Arcade.Image {
     }
 
     public applyGameOver(): void {
+        // play audio
+        playDeathSound(this.scene)
+
         this.gameState.changeState(new GameOverState())
 
         this.emitDeathParticles()
@@ -187,11 +189,7 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
     private emitDeathParticles(): void {
         this.deathEmitterFlow.start()
-        this.deathEmitterExpl.emitParticleAt(this.x, this.y + this.height, 100)
-    }
-
-    public emitParticles(): void {
-        this.emitter.emitParticleAt(this.x, this.y + this.height / 1.3, Math.random() * 10)
+        this.deathEmitterExpl.emitParticleAt(this.x, this.y, 100)
     }
 
     public setIgnoreInput(ignore = true): void {

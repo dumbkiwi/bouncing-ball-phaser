@@ -102,9 +102,6 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
 
                 this.player.setAngularVelocity(newAngularVelocity)
 
-                // create particle
-                // this.player.emitParticles()
-
                 // apply collision
                 this.applyHit(isAccurate)
             },
