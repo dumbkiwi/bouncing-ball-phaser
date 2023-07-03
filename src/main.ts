@@ -8,7 +8,10 @@ const SCALE_OPTS = {
     mode: Phaser.Scale.ScaleModes.FIT,
     parent: 'game',
     width: 720, // 16x9
-    height: 1280,
+    height:
+        window.innerHeight > window.innerWidth
+            ? (720 * window.innerHeight) / window.innerWidth
+            : 1280,
 }
 
 const GAME_CONFIG: Types.Core.GameConfig = {

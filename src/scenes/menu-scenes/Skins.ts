@@ -27,6 +27,8 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
     private currentSkin!: number
     private ownedSkins!: number[]
 
+    private indicatorTween!: Phaser.Tweens.Tween
+
     create() {
         const playerData = getPlayerData(this)
 
@@ -75,7 +77,31 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
         )
 
         panel.setChildrenInteractive({})
-        panel.on('child.click', this.onSkinSelection.bind(this))
+        panel.on('child.click', this.onSkinSelection.bind(this));
+
+        (panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragstart', () => {
+            if (this.indicatorTween) {
+                this.indicatorTween.stop()
+            }
+
+            this.indicatorTween = this.tweens.add({
+                targets: this.indicator,
+                alpha: 0,
+                duration: 100,
+            })
+        });
+
+        (panel.getElement('scroller') as Phaser.GameObjects.GameObject).on('dragend', () => {
+            if (this.indicatorTween) {
+                this.indicatorTween.stop()
+            }
+            
+            this.indicatorTween = this.tweens.add({
+                targets: this.indicator,
+                alpha: 1,
+                duration: 100,
+            })
+        })
 
         panel.layout()
         sizer.layout()

@@ -140,7 +140,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
             .setOrigin(0, 0)
 
         const logoX = this.cameras.main.centerX
-        const logoY = 400
+        const logoY = this.cameras.main.height * 0.3
         const width = this.cameras.main.width
 
         const spawner = new Spawner(
@@ -189,7 +189,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
                 bottom: 'bottom',
             },
             space: {
-                bottom: 100,
+                bottom: this.cameras.main.height * 0.1,
             },
         })
 
