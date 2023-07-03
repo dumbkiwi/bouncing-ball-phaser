@@ -8,7 +8,7 @@ import Credits from './menu-scenes/Credits'
 import OverlayUI from './overlays/OverlayUI'
 
 import SKINS from '@/constants/skins'
-import { registerPlayerData } from '@/classes/player/PlayerContext'
+import { getPlayerData, registerPlayerData } from '@/classes/player/PlayerContext'
 
 export enum SceneKeys {
     // scenes
@@ -95,27 +95,26 @@ export default class SceneController extends Phaser.Scene {
                 this.scene.sleep(from)
                 this.scene.setVisible(false, from)
             }
+            
+            if (nextScene.sys.settings.loader)
+            nextScene.events.once('create', () => {
+                // apply audio settings
+                const playerData = getPlayerData(this)
 
-            // start next scene
-            this.scene.launch(to)
+                if (playerData) {
+                    nextScene.sound.setVolume(playerData.settings.volume)
+                } else {
+                    throw new Error('Player data not found')
+                }
 
-            nextScene.events.once('ready', () => {
                 nextScene.createOverlay().then(() => {
                     loadingScene.transitionOut()
                 })
             })
-        })
 
-        loadingScene.events.on('transitioncomplete', () => {
-            nextScene.load.once('complete', () => {
-                this.scene.transition({
-                    target: to,
-                    duration: 1000,
-                    sleep: true,
-                    allowInput: false,
-                    moveBelow: true,
-                })
-            })
+            // start next scene
+            this.scene.launch(to)
+
         })
     }
 

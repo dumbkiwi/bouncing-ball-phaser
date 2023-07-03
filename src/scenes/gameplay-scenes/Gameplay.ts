@@ -24,6 +24,18 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
         this.load.svg('square', 'assets/shapes/square.svg')
         this.load.svg('left-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
         this.load.svg('right-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
+
+        
+        // audio
+        this.load.audio('score', 'assets/audio/score/combo_1.wav')
+        this.load.audio('player-death', 'assets/audio/player/player_death.wav')
+
+        for (let i = 1; i <= 17; i++) {
+            this.load.audio(`score-combo_${i}`, `assets/audio/score/combo_${i}.wav`)
+        }
+
+        // coin
+        this.load.audio('coin-pickup', 'assets/audio/coin/coin_pickup.wav')
     }
 
     create() {
@@ -71,12 +83,9 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
 
             const scene = this.game.scene.getScene(SceneKeys.GameUI) as GameplayUI
 
-            scene.load.once('complete', () => {
-                resolve()
-            })
-
             scene.events.once('create', () => {
                 scene.attachGameplay(this)
+                resolve()
             })
         })
     }
