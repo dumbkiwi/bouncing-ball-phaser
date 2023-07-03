@@ -5,7 +5,12 @@ import SecondOrderDynamics from '@/classes/physics/SecondOrderDynamics'
 
 import Vector2 = Phaser.Math.Vector2
 import SKINS from '@/constants/skins'
-import { SetPlayerDataAction, getPlayerData, oncePlayerDataChange, setPlayerData } from '@/classes/player/PlayerContext'
+import {
+    SetPlayerDataAction,
+    getPlayerData,
+    oncePlayerDataChange,
+    setPlayerData,
+} from '@/classes/player/PlayerContext'
 
 export default class Skins extends Phaser.Scene implements SceneWithOverlay {
     rexUI!: RexUIPlugin
@@ -36,7 +41,7 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
 
         // create indicator
         this.createIndicator()
-        
+
         // initiate skins
         this.ownedSkins = playerData.ownedSkins
         this.currentSkin = playerData.equippedSkin
@@ -44,21 +49,31 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
 
         // create coin text
         this.coins = playerData.coins
-        this.coinText = this.createCoinText(playerData.coins.toString()) 
-        sizer.add(this.coinText, 0, 'center', {
-            top: 20,
-            bottom: 20,
-        },
-        true)
+        this.coinText = this.createCoinText(playerData.coins.toString())
+        sizer.add(
+            this.coinText,
+            0,
+            'center',
+            {
+                top: 20,
+                bottom: 20,
+            },
+            true
+        )
 
         // create skin table
         const panel = this.createSkinPanel()
-        sizer.add(panel, 1, 'center', {
-            top: 20,
-            bottom: 20,
-        },
-        true)
-                
+        sizer.add(
+            panel,
+            1,
+            'center',
+            {
+                top: 20,
+                bottom: 20,
+            },
+            true
+        )
+
         panel.setChildrenInteractive({})
         panel.on('child.click', this.onSkinSelection.bind(this))
 
@@ -116,12 +131,14 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
                 centerX: 'center',
                 centerY: 'center',
             },
-            text: this.add.text(0, 0, coins, {
-                fontSize: '64px',
-                fontFamily: 'Arial',
-                fontStyle: 'bold',
-                color: '#666666',
-            }).setOrigin(0.5),
+            text: this.add
+                .text(0, 0, coins, {
+                    fontSize: '64px',
+                    fontFamily: 'Arial',
+                    fontStyle: 'bold',
+                    color: '#666666',
+                })
+                .setOrigin(0.5),
             icon: this.add.image(0, 0, 'coin').setScale(3),
             space: {
                 icon: 10,
@@ -137,7 +154,9 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
                 track: this.rexUI.add.roundRectangle(0, 0, 2, 0, 0, 0x666666),
                 thumb: this.rexUI.add.roundRectangle(0, 0, 8, 100, 5, 0x666666),
             },
-            background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 10, 0x000000, 0).setStrokeStyle(2, 0x666666),
+            background: this.rexUI.add
+                .roundRectangle(0, 0, 2, 2, 10, 0x000000, 0)
+                .setStrokeStyle(2, 0x666666),
             mouseWheelScroller: {
                 focus: false,
                 speed: 0.5,
@@ -176,11 +195,10 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
                 left: 10,
                 right: 10,
                 item: 20,
-                line: 20
+                line: 20,
             },
-            align: 'center'
+            align: 'center',
         })
-
 
         skins.forEach((skin) => {
             panel.add(skin)
@@ -202,7 +220,9 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
                 fontStyle: 'bold',
                 color: '#666666',
             }),
-            icon: this.add.image(0, 0, owned ? `skins-${skin.id}` :'skins-locked').setDisplaySize(130, 130),
+            icon: this.add
+                .image(0, 0, owned ? `skins-${skin.id}` : 'skins-locked')
+                .setDisplaySize(130, 130),
             space: {
                 icon: 5,
             },
@@ -216,7 +236,7 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
 
     private onSkinSelection(label: RexUIPlugin.Label) {
         const skinId = label.getData('skinId')
-        
+
         if (skinId === this.currentSkin) {
             return
         }
@@ -245,7 +265,7 @@ export default class Skins extends Phaser.Scene implements SceneWithOverlay {
         }
 
         this.currentSkin = skinId
-        
+
         setPlayerData(this, {
             type: SetPlayerDataAction.SET_EQUIPPED_SKIN,
             payload: skinId,

@@ -157,7 +157,9 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
 
         this.add.existing(spawner)
 
-        const logoSprite = this.add.sprite(logoX, logoY, `skins-${playerData.equippedSkin}`).setScale(0.8)
+        const logoSprite = this.add
+            .sprite(logoX, logoY, `skins-${playerData.equippedSkin}`)
+            .setScale(0.8)
 
         // spind the logo
         this.tweens.add({

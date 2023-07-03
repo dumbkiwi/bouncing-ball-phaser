@@ -1,9 +1,9 @@
 const DIFFICULTY_RUBRICS: DifficultyRubrics = {
     0: {
         condimentPropability: {
-            "coin": 0.1,
-            "left-spike": 0,
-            "right-spike": 0,
+            coin: 0.1,
+            'left-spike': 0,
+            'right-spike': 0,
         },
         minGap: 400,
         maxGap: 400,
@@ -17,14 +17,14 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         platformColor: {
             baseColor: 0x666666,
             accurateColor: 0x88ff88,
-            inaccurateColor: 0xffff00
-        }
+            inaccurateColor: 0xffff00,
+        },
     },
     50: {
         condimentPropability: {
-            "coin": 0.2,
-            "left-spike": 0.1,
-            "right-spike": 0,
+            coin: 0.2,
+            'left-spike': 0.1,
+            'right-spike': 0,
         },
         minGap: 200,
         maxGap: 500,
@@ -38,14 +38,14 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         platformColor: {
             baseColor: 0x666666,
             accurateColor: 0x88ff88,
-            inaccurateColor: 0xffff00
-        }
+            inaccurateColor: 0xffff00,
+        },
     },
     80: {
         condimentPropability: {
-            "coin": 0.2,
-            "left-spike": 0.2,
-            "right-spike": 0.1,
+            coin: 0.2,
+            'left-spike': 0.2,
+            'right-spike': 0.1,
         },
         minGap: 200,
         maxGap: 500,
@@ -59,14 +59,14 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         platformColor: {
             baseColor: 0x666666,
             accurateColor: 0x88ff88,
-            inaccurateColor: 0xffff00
-        }
+            inaccurateColor: 0xffff00,
+        },
     },
     200: {
         condimentPropability: {
-            "coin": 0.3,
-            "left-spike": 0.2,
-            "right-spike": 0.2,
+            coin: 0.3,
+            'left-spike': 0.2,
+            'right-spike': 0.2,
         },
         minGap: 300,
         maxGap: 600,
@@ -80,14 +80,14 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         platformColor: {
             baseColor: 0x666666,
             accurateColor: 0x88ff88,
-            inaccurateColor: 0xffff00
-        }
+            inaccurateColor: 0xffff00,
+        },
     },
     300: {
         condimentPropability: {
-            "coin": 0.4,
-            "left-spike": 0.3,
-            "right-spike": 0.3,
+            coin: 0.4,
+            'left-spike': 0.3,
+            'right-spike': 0.3,
         },
         minGap: 600,
         maxGap: 800,
@@ -101,9 +101,9 @@ const DIFFICULTY_RUBRICS: DifficultyRubrics = {
         platformColor: {
             baseColor: 0x666666,
             accurateColor: 0x88ff88,
-            inaccurateColor: 0xffff00
-        }
-    }
+            inaccurateColor: 0xffff00,
+        },
+    },
 }
 
 export default DIFFICULTY_RUBRICS

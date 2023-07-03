@@ -75,7 +75,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 }
 
                 // if it is an accurate hit, add chainable score
-                const {isAccurate, isLeft} = colliderPlatform.applyCollision(
+                const { isAccurate, isLeft } = colliderPlatform.applyCollision(
                     player,
                     this.config.requiredAcc
                 )
@@ -89,7 +89,6 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 const body = this.player.body as Phaser.Physics.Arcade.Body
                 let newAngularVelocity = body.angularVelocity
 
-                
                 if (isAccurate) {
                     newAngularVelocity += Math.random() * 400
                 } else {
@@ -118,7 +117,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
             const key = condimentType as PlatformCondimentType
 
             this.condimentGroup[key] = this.createCondimentGroup(key)
-            
+
             scene.add.existing(this.condimentGroup[key])
         })
 
@@ -329,14 +328,9 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         const despawnWidth = config.maxGap
         const despawnX = -despawnWidth / 2 - config.minGap - 100
         const despawnY = 0
-        return this.scene.add.rectangle(
-            despawnX,
-            despawnY,
-            despawnWidth,
-            this.mainCamera.height * 10,
-            0xff0000,
-            0
-        ).setOrigin(0.5, 0)
+        return this.scene.add
+            .rectangle(despawnX, despawnY, despawnWidth, this.mainCamera.height * 10, 0xff0000, 0)
+            .setOrigin(0.5, 0)
     }
 
     private updateDespawnArea(config: PlatformSpawnerConfig): void {
@@ -381,7 +375,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 baseColor: this.config.platformColor.baseColor,
                 accurateColor: this.config.platformColor.accurateColor,
                 inaccurateColor: this.config.platformColor.inaccurateColor,
-            }
+            },
         })
 
         // set the platform to be active and awake
@@ -435,7 +429,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         showGameObject?: boolean
     ) {
         condiment.enableBody(reset, x, y, enableGameObject, showGameObject)
-        
+
         const body = condiment.body as Phaser.Physics.Arcade.Body
 
         if (body) {
@@ -452,7 +446,7 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     }
 
     private addOptionalCondiments(platform: Platform) {
-        Object.keys(this.config.condimentPropability).forEach(condimentType => {
+        Object.keys(this.config.condimentPropability).forEach((condimentType) => {
             const key = condimentType as keyof typeof this.config.condimentPropability
 
             if (this.config.condimentPropability[key] > Math.random()) {
@@ -471,7 +465,14 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
                 condiment.attachToPlatform(platform)
                 platform.addCondiment(condiment)
 
-                this.activateCondiment(condiment, true, platform.x, platform.y - platform.height / 2 - condiment.height / 2, true, true)
+                this.activateCondiment(
+                    condiment,
+                    true,
+                    platform.x,
+                    platform.y - platform.height / 2 - condiment.height / 2,
+                    true,
+                    true
+                )
             }
         })
     }
@@ -485,7 +486,11 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         platform.disableBody(disableGameObject, hideGameObject)
     }
 
-    private deactivateCondiment(condiment: PlatformCondiment, disableGameObject?: boolean, hideGameObject?: boolean) {
+    private deactivateCondiment(
+        condiment: PlatformCondiment,
+        disableGameObject?: boolean,
+        hideGameObject?: boolean
+    ) {
         // debugger
         condiment.detachFromPlatform()
         condiment.disableBody(disableGameObject, hideGameObject)

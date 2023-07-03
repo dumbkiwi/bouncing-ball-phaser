@@ -45,21 +45,20 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
         )
 
         // volume
-        this.volumeSlider = 
-            rexUI.add
-                .slider({
-                    width: 200,
-                    height: 20,
-                    orientation: 'x',
-                    track: rexUI.add.roundRectangle(0, 0, 0, 0, 10, 0xaaaaaa),
-                    indicator: rexUI.add.roundRectangle(0, 0, 0, 0, 6, 0x666666),
-                    thumb: rexUI.add.roundRectangle(0, 0, 0, 0, 16, 0x666666),
-                    valuechangeCallback: (value: number) => {
-                        this.changeVolume(value)
-                    },
-                    input: 'click',
-                })
-                .setValue(1)
+        this.volumeSlider = rexUI.add
+            .slider({
+                width: 200,
+                height: 20,
+                orientation: 'x',
+                track: rexUI.add.roundRectangle(0, 0, 0, 0, 10, 0xaaaaaa),
+                indicator: rexUI.add.roundRectangle(0, 0, 0, 0, 6, 0x666666),
+                thumb: rexUI.add.roundRectangle(0, 0, 0, 0, 16, 0x666666),
+                valuechangeCallback: (value: number) => {
+                    this.changeVolume(value)
+                },
+                input: 'click',
+            })
+            .setValue(1)
         sizer.add(
             rexUI.add
                 .sizer({ orientation: 'x' })
@@ -73,12 +72,10 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
                     'center'
                 )
                 // volume slider
-                .add(this.volumeSlider, 1,
-                    'center',
-                    {
-                        left: 20,
-                        right: 20,
-                    }),
+                .add(this.volumeSlider, 1, 'center', {
+                    left: 20,
+                    right: 20,
+                }),
             0,
             'left',
             {
@@ -131,7 +128,7 @@ export default class QuickSettings extends Phaser.GameObjects.Container {
         if (!this.targetScene) {
             return
         }
-    
+
         this.volumeSlider?.setValue(this.targetScene.sound.volume)
     }
 

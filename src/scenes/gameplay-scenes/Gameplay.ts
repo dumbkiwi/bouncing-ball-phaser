@@ -22,10 +22,15 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     preload() {
         this.load.svg('platform', 'assets/shapes/square.svg')
         this.load.svg('square', 'assets/shapes/square.svg')
-        this.load.svg('left-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
-        this.load.svg('right-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {width: 40, height: 40})
+        this.load.svg('left-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {
+            width: 40,
+            height: 40,
+        })
+        this.load.svg('right-spike' as PlatformCondimentType, 'assets/shapes/triangle.svg', {
+            width: 40,
+            height: 40,
+        })
 
-        
         // audio
         this.load.audio('score', 'assets/audio/score/combo_1.wav')
         this.load.audio('player-death', 'assets/audio/player/player_death.wav')
@@ -53,15 +58,17 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
             this.gameStateManager
         )
 
-        this.spawner = this.add.existing(new PlatformSpawner(
-            this.physics.world,
-            this,
-            player,
-            difficultyManager.getPlatformConfig(0),
-            this.gameStateManager,
-            COLOR_MAP,
-            this.scoreManager
-        ))
+        this.spawner = this.add.existing(
+            new PlatformSpawner(
+                this.physics.world,
+                this,
+                player,
+                difficultyManager.getPlatformConfig(0),
+                this.gameStateManager,
+                COLOR_MAP,
+                this.scoreManager
+            )
+        )
 
         this.spawner.createMultiple({
             key: 'platform',

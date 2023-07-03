@@ -6,9 +6,11 @@ export default class DifficultyManager {
     constructor(rubrics: DifficultyRubrics) {
         this.rubrics = rubrics
 
-        this.scoreArray = Object.keys(this.rubrics).map((key) => {
-            return parseInt(key)
-        }).sort((a, b) => (a - b))
+        this.scoreArray = Object.keys(this.rubrics)
+            .map((key) => {
+                return parseInt(key)
+            })
+            .sort((a, b) => a - b)
 
         this.rubricsIndex = 0
     }

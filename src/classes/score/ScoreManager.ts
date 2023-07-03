@@ -118,7 +118,7 @@ export default class ScoreManager extends Phaser.GameObjects.Group {
     /**
      * Reset the multiplier
      */
-   public resetMultiplier() {
+    public resetMultiplier() {
         this.consecutiveHits = 0
         this.multiplier = 1
         this.multiplierText.setText(`x${this.multiplier}`)

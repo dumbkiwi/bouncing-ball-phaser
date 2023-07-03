@@ -1,4 +1,4 @@
-import DEFAULT_PLAYER_DATA from "@/constants/playerData"
+import DEFAULT_PLAYER_DATA from '@/constants/playerData'
 
 export enum SetPlayerDataAction {
     SAVE = 'SAVE',
@@ -25,11 +25,14 @@ export function getPlayerData(scene: Phaser.Scene): PlayerData {
     return player
 }
 
-export function setPlayerData(scene: Phaser.Scene, action: {
-    type: SetPlayerDataAction,
-    payload?: number | number[] | {volume: number},
-    saveImmediately?: boolean
-}) {
+export function setPlayerData(
+    scene: Phaser.Scene,
+    action: {
+        type: SetPlayerDataAction
+        payload?: number | number[] | { volume: number }
+        saveImmediately?: boolean
+    }
+) {
     const player = getPlayerData(scene)
     let save = action.saveImmediately ?? false
 
@@ -85,7 +88,7 @@ export function setPlayerData(scene: Phaser.Scene, action: {
 
             player.settings = {
                 ...player.settings,
-                ...action.payload
+                ...action.payload,
             }
 
             saveToRegistry(scene, player)
@@ -102,21 +105,31 @@ export function setPlayerData(scene: Phaser.Scene, action: {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function oncePlayerDataChange(scene: Phaser.Scene, callback: (player: PlayerData) => void, context?: any) {
-    scene.registry.events.once('changedata', (parent: Phaser.Data.DataManager, key: string, data: PlayerData) => {
-        if (key === 'player') {
-            callback(data)
-        }
-    }, context)
+export function oncePlayerDataChange(
+    scene: Phaser.Scene,
+    callback: (player: PlayerData) => void,
+    context?: any
+) {
+    scene.registry.events.once(
+        'changedata',
+        (parent: Phaser.Data.DataManager, key: string, data: PlayerData) => {
+            if (key === 'player') {
+                callback(data)
+            }
+        },
+        context
+    )
 }
 
 export function offPlayerDataChange(scene: Phaser.Scene, callback: (player: PlayerData) => void) {
-    scene.registry.events.off('changedata', (parent: Phaser.Data.DataManager, key: string, data: PlayerData) => {
-        if (key === 'player') {
-            callback(data)
+    scene.registry.events.off(
+        'changedata',
+        (parent: Phaser.Data.DataManager, key: string, data: PlayerData) => {
+            if (key === 'player') {
+                callback(data)
+            }
         }
-    })
-    
+    )
 }
 
 function saveToFile(player: PlayerData) {
@@ -129,7 +142,7 @@ function saveToRegistry(scene: Phaser.Scene, player: PlayerData) {
 
 function loadPlayerDataFromLocalStorage(): PlayerData {
     const playerData = localStorage.getItem('player')
-    
+
     if (playerData) {
         const parsedData = JSON.parse(playerData)
 

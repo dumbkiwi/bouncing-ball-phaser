@@ -12,7 +12,7 @@ const DEFAULT_PLATFORM_CONFIG: PlatformConfig = {
         baseColor: 0x666666,
         accurateColor: 0x88ff88,
         inaccurateColor: 0xffff00,
-    }
+    },
 }
 
 export default class Platform extends Phaser.Physics.Arcade.Sprite {
@@ -118,10 +118,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
     public resetConfig(requiredAcc: number, platformConfig: PlatformConfig): void {
         const colliderSizeOffsetY = 30
 
-        this.setDisplaySize(
-            platformConfig.width,
-            platformConfig.height + colliderSizeOffsetY
-        )
+        this.setDisplaySize(platformConfig.width, platformConfig.height + colliderSizeOffsetY)
 
         this.setOffset(0, colliderSizeOffsetY / 3)
 
@@ -207,8 +204,8 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         player: Player,
         _accuracy: number
     ): {
-        isAccurate: boolean,
-        isLeft: boolean,
+        isAccurate: boolean
+        isLeft: boolean
     } {
         const playerX = player.getCenter().x ?? 0
 
@@ -216,7 +213,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         const platformExtentR = this.mPlatform.position.x + this.mPlatform.size.x / 2
 
         const isInaccurate = playerX < platformExtentL || playerX > platformExtentR
-        
+
         const isLeft = playerX < platformExtentL
 
         return {
@@ -226,7 +223,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
     }
 
     /**
-     * 
+     *
      * @param player the player object
      * @param accuracy the accuracy of the player's input
      * @returns how the player landed on the platform
@@ -235,8 +232,8 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
         player: Player,
         accuracy: number
     ): {
-        isAccurate: boolean,
-        isLeft: boolean,
+        isAccurate: boolean
+        isLeft: boolean
     } {
         if (!this.platformConfig) {
             throw new Error('platformConfig is undefined')
@@ -251,15 +248,27 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
             this.setAccurate()
 
             // emit particles
-            this.particleEmitter.emitParticleAt(this.mPlatform.position.x, this.mPlatform.position.y, Math.random() * 10 + 10)
+            this.particleEmitter.emitParticleAt(
+                this.mPlatform.position.x,
+                this.mPlatform.position.y,
+                Math.random() * 10 + 10
+            )
         } else {
             this.setInaccurate(isLeft)
 
             // emit particles
             if (isLeft) {
-                this.particleEmitter.emitParticleAt(this.lPlatform.position.x, this.lPlatform.position.y, Math.random() * 10)
+                this.particleEmitter.emitParticleAt(
+                    this.lPlatform.position.x,
+                    this.lPlatform.position.y,
+                    Math.random() * 10
+                )
             } else {
-                this.particleEmitter.emitParticleAt(this.rPlatform.position.x, this.rPlatform.position.y, Math.random() * 10)
+                this.particleEmitter.emitParticleAt(
+                    this.rPlatform.position.x,
+                    this.rPlatform.position.y,
+                    Math.random() * 10
+                )
             }
         }
 
@@ -294,7 +303,7 @@ export default class Platform extends Phaser.Physics.Arcade.Sprite {
     }
 
     public clearCondiments(): void {
-        this.condiments.forEach(condiment => {
+        this.condiments.forEach((condiment) => {
             condiment.disableBody(true, true)
         })
         this.condiments = []

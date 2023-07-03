@@ -95,26 +95,25 @@ export default class SceneController extends Phaser.Scene {
                 this.scene.sleep(from)
                 this.scene.setVisible(false, from)
             }
-            
+
             if (nextScene.sys.settings.loader)
-            nextScene.events.once('create', () => {
-                // apply audio settings
-                const playerData = getPlayerData(this)
+                nextScene.events.once('create', () => {
+                    // apply audio settings
+                    const playerData = getPlayerData(this)
 
-                if (playerData) {
-                    nextScene.sound.setVolume(playerData.settings.volume)
-                } else {
-                    throw new Error('Player data not found')
-                }
+                    if (playerData) {
+                        nextScene.sound.setVolume(playerData.settings.volume)
+                    } else {
+                        throw new Error('Player data not found')
+                    }
 
-                nextScene.createOverlay().then(() => {
-                    loadingScene.transitionOut()
+                    nextScene.createOverlay().then(() => {
+                        loadingScene.transitionOut()
+                    })
                 })
-            })
 
             // start next scene
             this.scene.launch(to)
-
         })
     }
 
