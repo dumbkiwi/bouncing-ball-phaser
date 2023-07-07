@@ -9,6 +9,8 @@ import OverlayUI from './overlays/OverlayUI'
 
 import SKINS from '@/constants/skins'
 import { getPlayerData, registerPlayerData } from '@/classes/player/PlayerContext'
+import CustomeLevels from './menu-scenes/CustomLevels'
+import GameModeStateMachine, { EndlessMode } from '@/classes/game-mode/GameModeStateMachine'
 
 export enum SceneKeys {
     // scenes
@@ -18,6 +20,7 @@ export enum SceneKeys {
     MainMenu = 'MainMenu',
     SceneController = 'SceneController',
     SkinSelection = 'SkinSelection',
+    CustomLevels = 'CustomLevels',
 
     // overlays
     GameUI = 'GameOver',
@@ -27,6 +30,7 @@ export enum SceneKeys {
 
 export default class SceneController extends Phaser.Scene {
     scene!: Phaser.Scenes.ScenePlugin
+    private gameModeManager!: GameModeStateMachine
 
     constructor() {
         super('SceneController')
@@ -39,6 +43,7 @@ export default class SceneController extends Phaser.Scene {
         this.game.scene.add(SceneKeys.MainMenu, MainMenu, false)
         this.game.scene.add(SceneKeys.GameSettings, GameSettings, false)
         this.game.scene.add(SceneKeys.SkinSelection, Skins, false)
+        this.game.scene.add(SceneKeys.CustomLevels, CustomeLevels, false)
 
         // overlays
         this.game.scene.add(SceneKeys.GameUI, UI, false)
@@ -61,6 +66,9 @@ export default class SceneController extends Phaser.Scene {
     create() {
         // register player data to registry
         registerPlayerData(this)
+
+        // create game mode manager
+        this.gameModeManager = new GameModeStateMachine(new EndlessMode(this))
     }
 
     public transitionTo(from: SceneKeys | undefined, to: SceneKeys) {
@@ -147,5 +155,9 @@ export default class SceneController extends Phaser.Scene {
                 })
             })
         })
+    }
+
+    public getGameModeManager() {
+        return this.gameModeManager
     }
 }

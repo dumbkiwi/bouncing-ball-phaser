@@ -1,0 +1,3 @@
+type Beatmap = {
+    key: string
+}

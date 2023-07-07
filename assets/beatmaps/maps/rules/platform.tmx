@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="32" height="4" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="8">
+ <tileset firstgid="1" source="../../../../../tiled/bouncing-ball-phaser/platforms.tsx"/>
+ <layer id="1" name="input_base" width="32" height="4">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,1,0,2,0,3,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="output_objects">
+  <object id="4" name="platform" type="platform" x="16" y="16" width="16" height="16">
+   <properties>
+    <property name="leftSpike" type="bool" value="false"/>
+    <property name="rightSpike" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="5" name="platform" type="platform" x="112" y="16" width="16" height="16">
+   <properties>
+    <property name="leftSpike" type="bool" value="true"/>
+    <property name="rightSpike" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="6" name="platform" type="platform" x="80" y="16" width="16" height="16">
+   <properties>
+    <property name="leftSpike" type="bool" value="false"/>
+    <property name="rightSpike" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="7" name="platform" type="platform" x="48" y="16" width="16" height="16">
+   <properties>
+    <property name="leftSpike" type="bool" value="true"/>
+    <property name="rightSpike" type="bool" value="false"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

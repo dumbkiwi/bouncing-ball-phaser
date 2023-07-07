@@ -1,4 +1,4 @@
-const DIFFICULTY_RUBRICS: DifficultyRubrics = {
+const DIFFICULTY_RUBRICS: DifficultyManager.Rubrics = {
     0: {
         condimentPropability: {
             coin: 0.1,

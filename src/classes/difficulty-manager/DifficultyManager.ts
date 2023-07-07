@@ -1,9 +1,10 @@
 export default class DifficultyManager {
-    private rubrics: DifficultyRubrics
+    private rubrics: DifficultyManager.Rubrics
     private scoreArray: number[]
     private rubricsIndex: number
+    private currentPlatformConfig: PlatformSpawnerConfig
 
-    constructor(rubrics: DifficultyRubrics) {
+    constructor(rubrics: DifficultyManager.Rubrics) {
         this.rubrics = rubrics
 
         this.scoreArray = Object.keys(this.rubrics)
@@ -13,6 +14,7 @@ export default class DifficultyManager {
             .sort((a, b) => a - b)
 
         this.rubricsIndex = 0
+        this.currentPlatformConfig = rubrics[0]
     }
 
     /**
@@ -20,7 +22,7 @@ export default class DifficultyManager {
      * @param score the current score
      * @returns the platform config for the current score
      */
-    public getPlatformConfig(score: number): PlatformSpawnerConfig {
+    public updatePlatformConfig(score: number): PlatformSpawnerConfig {
         const nextIndex = this.rubricsIndex + 1
         if (nextIndex < this.scoreArray.length) {
             if (score >= this.scoreArray[nextIndex]) {
@@ -28,6 +30,11 @@ export default class DifficultyManager {
             }
         }
 
-        return this.rubrics[this.scoreArray[this.rubricsIndex]]
+        this.currentPlatformConfig = {
+            ...this.currentPlatformConfig,
+            ...this.rubrics[this.scoreArray[this.rubricsIndex]]
+        }
+
+        return this.currentPlatformConfig
     }
 }
