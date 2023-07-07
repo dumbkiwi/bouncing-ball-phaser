@@ -10,7 +10,7 @@ export default class Loading extends Phaser.Scene implements SceneWithTransition
     }
 
     public preload(): void {
-        this.load.svg('loading-logo', 'assets/loadingball.svg', { width: 300, height: 300 })
+        this.load.svg('loading-logo', 'assets/loadingball.svg', { scale: 3 })
     }
 
     public create(): void {
