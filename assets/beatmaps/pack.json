@@ -1,0 +1,11 @@
+{
+    "preload": {
+        "files": [
+            {
+                "type": "tilemapTiledJSON",
+                "key": "uno",
+                "url": "assets/beatmaps/maps/uno.json"
+            }
+        ]
+    }
+}

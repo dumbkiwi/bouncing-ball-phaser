@@ -5,10 +5,10 @@ import SceneController from './scenes/SceneController'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 
 const SCALE_OPTS = {
-    mode: Phaser.Scale.ScaleModes.FIT,
+    mode: Phaser.Scale.ScaleModes.HEIGHT_CONTROLS_WIDTH,
     parent: 'game',
     width: 720, // 16x9
-    height:
+    height: // 1280,
         window.innerHeight > window.innerWidth
             ? (720 * window.innerHeight) / window.innerWidth
             : 1280,

@@ -30,6 +30,8 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
     private colorMap: PlatformColors
     private shadowColor: number
 
+    private platformHitEventEmitter: Phaser.Events.EventEmitter
+
     constructor(
         world: Phaser.Physics.Arcade.World,
         scene: Phaser.Scene,
@@ -142,6 +144,8 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         this.shadowColor = gameState.getNextPlatformShadowColor()
         this.colorMap = colorMap
 
+        this.platformHitEventEmitter = new Phaser.Events.EventEmitter()
+
         this.scene.time.addEvent({
             callback: () => {
                 this.onUpdate()
@@ -236,6 +240,9 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         if (!changed) {
             this.updatePlatformStates()
         }
+
+        // emit event
+        this.platformHitEventEmitter.emit('hit', isAccurate)
     }
 
     private updatePlatformStates() {
@@ -514,5 +521,13 @@ export default class PlatformSpawner extends Phaser.Physics.Arcade.Group {
         this.updateSpawnArea(config)
         this.updateBufferArea(config)
         this.updateDespawnArea(config)
+    }
+
+    public onPlatformHit(callback: (accurate: boolean, platformsHitAlready: number) => void) {
+        this.platformHitEventEmitter.on('hit', callback)
+    }
+
+    public removeAllPlatformHitListener() {
+        this.platformHitEventEmitter.removeAllListeners('hit')
     }
 }

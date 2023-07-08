@@ -2,13 +2,13 @@ import Player from '@/classes/player/Player'
 import PlatformSpawner from '@/classes/platform/PlatformSpawner'
 import ScoreManager from '@/classes/score/ScoreManager'
 import Phaser from 'phaser'
-import { SceneKeys } from '../SceneController'
+import SceneController, { SceneKeys } from '../SceneController'
 import GameplayStateMachine, { StaticState } from '@/classes/gameplay-state/GameplayState'
 import GameplayUI from '../overlays/GameplayUI'
 import DifficultyManager from '@/classes/difficulty-manager/DifficultyManager'
 import COLOR_MAP from '@/constants/colorMap'
-import DIFFICULTY_RUBRICS from '@/constants/difficultyRubrics'
 import { getPlayerData } from '@/classes/player/PlayerContext'
+import { EndlessMode } from '@/classes/game-mode/GameModeStateMachine'
 
 export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     scene!: Phaser.Scenes.ScenePlugin
@@ -18,6 +18,10 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     private gameStateManager!: GameplayStateMachine
 
     private scoreManager!: ScoreManager
+
+    constructor() {
+        super(SceneKeys.Game)
+    }
 
     preload() {
         this.load.svg('platform', 'assets/shapes/square.svg')
@@ -44,8 +48,9 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
     }
 
     create() {
+        const sceneController = this.scene.get(SceneKeys.SceneController) as SceneController
         const playerData = getPlayerData(this)
-        const difficultyManager = new DifficultyManager(DIFFICULTY_RUBRICS)
+        const difficultyManager = new DifficultyManager(sceneController.getGameModeManager().getRubrics())
 
         this.gameStateManager = new GameplayStateMachine(new StaticState())
         this.scoreManager = new ScoreManager(this, this.cameras.main.centerX, 100)
@@ -63,7 +68,7 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
                 this.physics.world,
                 this,
                 player,
-                difficultyManager.getPlatformConfig(0),
+                difficultyManager.updatePlatformConfig(0),
                 this.gameStateManager,
                 COLOR_MAP,
                 this.scoreManager
@@ -75,13 +80,30 @@ export default class Gameplay extends Phaser.Scene implements SceneWithOverlay {
             quantity: 20,
         })
 
-        this.scoreManager.onScoreChange((score) => {
-            this.spawner.setConfig(difficultyManager.getPlatformConfig(score))
-        })
+        if (sceneController.getGameModeManager().getMode() instanceof EndlessMode) {
+            // update platform config on score change
+            this.scoreManager.onScoreChange((score) => {
+                this.spawner.setConfig(difficultyManager.updatePlatformConfig(score))
+            })
+        } else {
+            // update platforms on platform hit
+            this.spawner.onPlatformHit((accurate: boolean, platformsHitAlready: number) => {
+                this.spawner.setConfig(difficultyManager.updatePlatformConfig(platformsHitAlready))
+            })
+        }
 
         // prespawn platforms
         this.spawner.prespawnPlatform()
+
+        // remove listeners on sleep
+        this.events.once('sleep', () => {
+            this.scoreManager.removeAllListeners()
+        })
     }
+
+    // private createRubrics(): DifficultyManager.Rubrics {
+
+    // }
 
     createOverlay(): Promise<void> {
         return new Promise<void>((resolve) => {

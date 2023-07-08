@@ -5,6 +5,8 @@ import Vector2 = Phaser.Math.Vector2
 import TextButton from '@/classes/ui/TextButton'
 import SceneController, { SceneKeys } from '../SceneController'
 import { getPlayerData } from '@/classes/player/PlayerContext'
+import { BUTTON } from '@/constants/fontStyle'
+import { EndlessMode } from '@/classes/game-mode/GameModeStateMachine'
 
 const DEFAULT_SPACING = 30
 const DEFAULT_DISTANCE = 200
@@ -140,7 +142,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
             .setOrigin(0, 0)
 
         const logoX = this.cameras.main.centerX
-        const logoY = this.cameras.main.height * 0.3
+        const logoY = this.cameras.main.height * 0.25
         const width = this.cameras.main.width
 
         const spawner = new Spawner(
@@ -206,8 +208,14 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
             throw new Error('SceneController not found')
         }
         // play button
-        const playButton = this.createMenuButton('Play', () => {
+        const playButton = this.createMenuButton('Endless', () => {
+            controller.getGameModeManager().changeState(new EndlessMode(this))
             controller.transitionTo(SceneKeys.MainMenu, SceneKeys.Game)
+        }).setOrigin(0.5, 0.5)
+
+        // custom levels button
+        const customLevelsButton = this.createMenuButton('Custom Levels', () => {
+            controller.transitionTo(SceneKeys.MainMenu, SceneKeys.CustomLevels)
         }).setOrigin(0.5, 0.5)
 
         // skins button
@@ -258,6 +266,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
         })
 
         sizer.add(playButton, 0, 'center', { top: 20, bottom: 20 })
+        sizer.add(customLevelsButton, 0, 'center', { top: 20, bottom: 20 })
         sizer.add(skinsButton, 0, 'center', { top: 20, bottom: 20 })
         sizer.add(settingsButton, 0, 'center', { top: 20, bottom: 20 })
         sizer.add(creditsButton, 0, 'center', { top: 20, bottom: 20 })
@@ -272,12 +281,7 @@ export default class MainMenu extends Phaser.Scene implements SceneWithOverlay {
                 0,
                 0,
                 text,
-                {
-                    fontSize: 60,
-                    fontStyle: 'bold',
-                    fontFamily: 'Arial',
-                    color: '#666666',
-                },
+                BUTTON,
                 callback
             )
         )
